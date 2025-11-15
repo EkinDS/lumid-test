@@ -19,23 +19,23 @@ namespace _Game.Features.HumansState.Scripts.Combat
         {
             _bossPrefab = bossPrefab;
 
-            SpawnBoss(new List<HumanView>());
+            SpawnBoss(new List<HumanPresenter>());
         }
 
-        protected override void Enter(HumanView humanView)
+        protected override void Enter(HumanPresenter humanView)
         {
             var position = new Vector3(Random.Range(-1f, 1f), 3, 0);
             humanView.MoveTo(position, StartToCombat);
         }
 
-        private void StartToCombat(HumanView humanView)
+        private void StartToCombat(HumanPresenter humanView)
         {
             _currentBossView.RegisterAttacker(humanView);
             humanView.StartAttacking(_currentBossView);
             _currentBossView.RegisterAttacker(humanView);
         }
 
-        private void SpawnBoss(List<HumanView> attackers)
+        private void SpawnBoss(List<HumanPresenter> attackers)
         {
             var clone = GameObject.Instantiate(_bossPrefab, new Vector3(0, 3.93f, 0), Quaternion.identity);
             clone.Initialize(100, 1.05f, 1, 5);
@@ -44,7 +44,7 @@ namespace _Game.Features.HumansState.Scripts.Combat
             _currentBossView.BossDefeatedCallback += HandleBossDefeated;
         }
 
-        private void HandleBossDefeated(List<HumanView> attackers)
+        private void HandleBossDefeated(List<HumanPresenter> attackers)
         {
             _currentBossView = null;
             SpawnBoss(attackers);

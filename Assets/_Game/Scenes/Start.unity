@@ -302,7 +302,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _trainStateView: {fileID: 7461129562347105568, guid: bfe0ca9514adc423ebf8c9cfb36b9093, type: 3}
-  _humanPrefab: {fileID: 3440788673489218210, guid: 24dbdd1880528452cb715ec41db884a2, type: 3}
+  _humanPrefab: {fileID: 5440544385367191089, guid: 24dbdd1880528452cb715ec41db884a2, type: 3}
   _bossPrefab: {fileID: -1147639978253487587, guid: 9e687aaddbde14d6098d6b545f5c8ca5, type: 3}
 --- !u!1 &1186642282
 GameObject:

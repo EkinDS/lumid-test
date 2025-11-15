@@ -8,9 +8,9 @@ namespace _Game.Features.Bosses
 {
     public class BossView : MonoBehaviour
     {
-        public Action<List<HumanView>> BossDefeatedCallback { get; set; }
+        public Action<List<HumanPresenter>> BossDefeatedCallback { get; set; }
 
-        private readonly List<HumanView> _attackers = new();
+        private readonly List<HumanPresenter> _attackers = new();
 
         public bool IsAlive() => _currentHp > 0;
 
@@ -38,7 +38,7 @@ namespace _Game.Features.Bosses
 
             _maximumHealth = (int)_currentHp;
 
-            _healthBar.SetFillValues((float)_currentHp, _maximumHealth);
+            _healthBar.SetFillAmount((float)_currentHp, _maximumHealth);
         }
 
         private void Update()
@@ -53,7 +53,7 @@ namespace _Game.Features.Bosses
         {
             if (Time.time - _lastAttackTime >= _attackInterval && _attackers.Count > 0)
             {
-                var defeatedHumans = new List<HumanView>();
+                var defeatedHumans = new List<HumanPresenter>();
                 for (var i = 0; i < Mathf.Min(_targetsPerAttack, _attackers.Count); i++)
                 {
                     var target = _attackers[i];
@@ -61,7 +61,7 @@ namespace _Game.Features.Bosses
 
                    AnimateAttack();
 
-                    if (target.IsDead())
+                    if (target.IsDead)
                     {
                         defeatedHumans.Add(target);
                     }
@@ -80,7 +80,7 @@ namespace _Game.Features.Bosses
         {
             _currentHp = Math.Max(0, _currentHp - damage);
 
-            _healthBar.SetFillValues((float)_currentHp, _maximumHealth);
+            _healthBar.SetFillAmount((float)_currentHp, _maximumHealth);
 
             AnimateTakingDamage();
 
@@ -91,7 +91,7 @@ namespace _Game.Features.Bosses
             Destroy(gameObject);
         }
 
-        public void RegisterAttacker(HumanView humanView)
+        public void RegisterAttacker(HumanPresenter humanView)
         {
             if (!_attackers.Contains(humanView))
             {

@@ -22,19 +22,19 @@ namespace _Game.Features.HumansState.Scripts.Training
             GameObject.Instantiate(trainSlotPrefab, _startingPosition, quaternion.identity);
         }
 
-        protected override void Enter(HumanView humanView)
+        protected override void Enter(HumanPresenter humanView)
         {
             _isFree = false;
             humanView.MoveTo(_startingPosition, _ => PrepareForCombatCurrentHuman(humanView));
         }
 
-        private void PrepareForCombatCurrentHuman(HumanView humanView)
+        private void PrepareForCombatCurrentHuman(HumanPresenter humanView)
         {
             Observable.Timer(TimeSpan.FromMilliseconds(1000))
                 .Subscribe(_ => OnFinished(humanView));
         }
 
-        private void OnFinished(HumanView humanView)
+        private void OnFinished(HumanPresenter humanView)
         {
             humanView.Train();
             _isFree = true;

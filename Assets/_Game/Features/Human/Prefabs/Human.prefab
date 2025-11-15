@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6689654972966922288}
   - component: {fileID: 3440788673489218210}
+  - component: {fileID: 5440544385367191089}
   m_Layer: 0
   m_Name: Human
   m_TagString: Untagged
@@ -48,6 +49,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _healthBar: {fileID: 2554545242030704386}
   _spriteRenderer: {fileID: 4447039135978197380}
+--- !u!114 &5440544385367191089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3668349203956419542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3f5719db76ccad44a55e7ff19dc3939, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _baseHealth: 10
+  _baseDamage: 10
 --- !u!1 &7123741550956967415
 GameObject:
   m_ObjectHideFlags: 0

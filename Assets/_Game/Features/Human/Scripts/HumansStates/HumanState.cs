@@ -6,7 +6,7 @@ namespace _Game.Features.HumansState.Scripts.Core
     {
         protected readonly HumanStateController humanStateController;
 
-        protected abstract void Enter(HumanView humanView);
+        protected abstract void Enter(HumanPresenter humanView);
         public abstract bool HasFreeSlot();
 
         protected HumanState(HumanStateController humanStateController)
@@ -14,7 +14,7 @@ namespace _Game.Features.HumansState.Scripts.Core
             this.humanStateController = humanStateController;
         }
 
-        public void OnEnter(HumanView humanView)
+        public void OnEnter(HumanPresenter humanView)
         {
             Enter(humanView);
         }

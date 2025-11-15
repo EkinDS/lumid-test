@@ -20,9 +20,8 @@ namespace _Game.Features.HumansState.Scripts.Portal
         {
         }
 
-        protected override void Enter(HumanView humanView)
+        protected override void Enter(HumanPresenter humanView)
         {
-            humanView.SetPosition(_startingPosition);
             _freeSlot = false;
 
             Observable.Timer(TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(1))
@@ -31,7 +30,7 @@ namespace _Game.Features.HumansState.Scripts.Portal
                 .AddTo(_disposable);
         }
 
-        private void MoveToWaiting(HumanView humanView)
+        private void MoveToWaiting(HumanPresenter humanView)
         {
             _disposable.Clear();
             humanStateController.TransitionTo<WaitingState>(humanView);

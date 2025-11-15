@@ -6,7 +6,7 @@ public class HealthBar : MonoBehaviour
     [SerializeField] private Image fillerSprite;
     
 
-    public void SetFillValues(float currentHealth, float maximumHealth)
+    public void SetFillAmount(float currentHealth, float maximumHealth)
     {
         float percentage = currentHealth / maximumHealth;
         fillerSprite.fillAmount = percentage;

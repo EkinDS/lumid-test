@@ -13,7 +13,7 @@ namespace _Game.Features.HumansState.Scripts.Core
     public class HumanStateController : MonoBehaviour
     {
         [SerializeField] private GameObject _trainStateView;
-        [SerializeField] private HumanView _humanPrefab;
+        [SerializeField] private HumanPresenter _humanPrefab;
         [SerializeField] private BossView _bossPrefab;
 
         private List<HumanState> _states;
@@ -32,7 +32,7 @@ namespace _Game.Features.HumansState.Scripts.Core
             TransitionTo<SpawnState>();
         }
 
-        public void TransitionTo<T>(HumanView humanView = null) where T : HumanState
+        public void TransitionTo<T>(HumanPresenter humanView = null) where T : HumanState
         {
             foreach (var state in _states)
             {

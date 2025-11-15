@@ -9,27 +9,27 @@ namespace _Game.Features.HumansState.Scripts.Spawn
 {
     public class SpawnState : HumanState
     {
-        private readonly HumanView _humanPrefab;
+        private readonly HumanPresenter _humanPrefab;
 
         private int _spawnedHumansCount;
 
         public override bool HasFreeSlot() => true;
 
-        public SpawnState(HumanStateController humanStateController, HumanView humanPrefab) : base(
+        public SpawnState(HumanStateController humanStateController, HumanPresenter humanPrefab) : base(
             humanStateController)
         {
             _humanPrefab = humanPrefab;
         }
 
-        protected override void Enter(HumanView humanView)
+        protected override void Enter(HumanPresenter humanView)
         {
             SpawnHuman();
         }
 
         private void SpawnHuman()
         {
-            var humanView = GameObject.Instantiate(_humanPrefab, Vector3.zero, Quaternion.identity);
-            humanView.Initialize(_spawnedHumansCount++);
+            var humanView = GameObject.Instantiate(_humanPrefab, new Vector3(0F, -4.8F, 0F), Quaternion.identity);
+            humanView.Initialize();
             humanStateController.TransitionTo<PortalState>(humanView);
 
             Observable.Interval(TimeSpan.FromMilliseconds(1000))

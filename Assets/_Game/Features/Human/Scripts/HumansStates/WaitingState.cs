@@ -19,13 +19,13 @@ namespace _Game.Features.HumansState.Scripts.Waiting
         {
         }
 
-        protected override void Enter(HumanView humanView)
+        protected override void Enter(HumanPresenter humanView)
         {
             var position = new Vector3(Random.Range(-1f, 1f), -4, 0);
             humanView.MoveTo(position, OnReachedWaitingSlot);
         }
 
-        private void OnReachedWaitingSlot(HumanView humanView)
+        private void OnReachedWaitingSlot(HumanPresenter humanView)
         {
             _disposables.Add(humanView.GetInstanceID(), new CompositeDisposable());
             Observable.Timer(TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(0.5f))
@@ -34,7 +34,7 @@ namespace _Game.Features.HumansState.Scripts.Waiting
                 .AddTo(_disposables[humanView.GetInstanceID()]);
         }
 
-        private void FreeGridSlotAndMoveHumanToCombatPreparation(HumanView humanView)
+        private void FreeGridSlotAndMoveHumanToCombatPreparation(HumanPresenter humanView)
         {
             _disposables[humanView.GetInstanceID()].Dispose();
             _disposables.Remove(humanView.GetInstanceID());
