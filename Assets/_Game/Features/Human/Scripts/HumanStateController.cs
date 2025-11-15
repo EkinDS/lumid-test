@@ -16,6 +16,8 @@ namespace _Game.Features.HumansState.Scripts.Core
         [SerializeField] private HumanPresenter _humanPrefab;
         [SerializeField] private BossPresenter _bossPrefab;
 
+        public List<HumanPresenter> Humans { get; } = new();
+
         private List<HumanState> _states;
 
         private void Start()
@@ -29,16 +31,16 @@ namespace _Game.Features.HumansState.Scripts.Core
                 new CombatState(this, _bossPrefab),
             };
 
-            TransitionTo<SpawnState>();
+            TransitionTo<SpawnState>(null);
         }
 
-        public void TransitionTo<T>(HumanPresenter humanView = null) where T : HumanState
+        public void TransitionTo<T>(HumanPresenter human = null) where T : HumanState
         {
             foreach (var state in _states)
             {
                 if (state.GetType() == typeof(T))
                 {
-                    state.OnEnter(humanView);
+                    state.OnEnter(human);
                 }
             }
         }
@@ -54,6 +56,19 @@ namespace _Game.Features.HumansState.Scripts.Core
             }
 
             return false;
+        }
+
+        // 🔹 Spawn eden state burayı kullanacak
+        public void RegisterHuman(HumanPresenter human)
+        {
+            if (!Humans.Contains(human))
+                Humans.Add(human);
+        }
+
+        // 🔹 Ölen human burayı çağıracak
+        public void UnregisterHuman(HumanPresenter human)
+        {
+            Humans.Remove(human);
         }
     }
 }

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2921167d6a129de469fb42ff729975fb, type: 3}
-  m_Name: HumanHealthData
+  m_Name: HumanData
   m_EditorClassIdentifier: 
   humanLevelData:
   - health: 10

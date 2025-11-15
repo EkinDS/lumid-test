@@ -32,7 +32,6 @@ namespace _Game.Features.HumansState.Scripts.Combat
         {
             _currentBossView.RegisterAttacker(humanView);
             humanView.StartAttacking(_currentBossView);
-            _currentBossView.RegisterAttacker(humanView);
         }
 
         private void SpawnBoss(List<HumanPresenter> attackers)

@@ -28,13 +28,27 @@ namespace _Game.Features.HumansState.Scripts.Spawn
 
         private void SpawnHuman()
         {
-            var humanView = GameObject.Instantiate(_humanPrefab, new Vector3(0F, -4.8F, 0F), Quaternion.identity);
-            humanView.Initialize();
-            humanStateController.TransitionTo<PortalState>(humanView);
+            var human = GameObject.Instantiate(_humanPrefab, new Vector3(0F, -4.8F, 0F), Quaternion.identity);
+            human.Initialize();
 
+            humanStateController.RegisterHuman(human);
+
+            human.OnHumanDied += OnHumanDied;
+
+            humanStateController.TransitionTo<PortalState>(human);
+
+         
             Observable.Interval(TimeSpan.FromMilliseconds(1000))
                 .Where(_ => humanStateController.FreeSlotIn<PortalState>())
                 .Subscribe(_ => SpawnHuman());
         }
+
+        private void OnHumanDied(HumanPresenter human)
+        {
+            human.OnHumanDied -= OnHumanDied;
+            humanStateController.UnregisterHuman(human);
+        }
+
+
     }
 }

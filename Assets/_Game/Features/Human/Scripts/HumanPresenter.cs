@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using _Game.Features.Bosses;
 using _Game.Features.PlayerWallet;
@@ -64,14 +65,6 @@ namespace _Game.Features.Humans
         {
             _view.ArrangeHealthBar(current, max);
         }
-
-        private void HandleDied()
-        {
-            if (_attackRoutine != null)
-                StopCoroutine(_attackRoutine);
-
-            Destroy(gameObject);
-        }
         
         private IEnumerator AttackLoop()
         {
@@ -85,6 +78,40 @@ namespace _Game.Features.Humans
 
                 yield return wait;
             }
+        }
+        
+        ////
+        
+        public event Action<HumanPresenter> OnHumanDied;
+
+
+        public void SetMaxHealth(int newMax)
+        {
+            _model.SetMaxHealth(newMax);
+        }
+
+        public void SetMoveSpeed(float newSpeed)
+        {
+            
+        }
+
+        public void SetAttackInterval(float newInterval)
+        {
+            
+        }
+
+        public void SetDamage(int newDamage)
+        {
+            _model.SetDamage(newDamage);
+        }
+
+        private void HandleDied()
+        {
+            if (_attackRoutine != null)
+                StopCoroutine(_attackRoutine);
+
+            OnHumanDied?.Invoke(this);
+            Destroy(gameObject);
         }
     }
 }

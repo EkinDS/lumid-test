@@ -9,32 +9,32 @@ public class HumanData : ScriptableObject
     public List<HumanMovementSpeedLevelData> humanMovementSpeedLevelData = new List<HumanMovementSpeedLevelData>();
     public List<HumanAttackIntervalLevelData> humanAttackIntervalLevelData = new List<HumanAttackIntervalLevelData>();
     public List<HumanDamageLevelData> humanDamageLevelData = new List<HumanDamageLevelData>();
-}
 
-[Serializable]
-public class HumanHealthLevelData
-{
-    public int health;
-    public int cost;
-}
+    [Serializable]
+    public class HumanHealthLevelData : ILevelData
+    {
+        public int health;
+        public int Cost { get; }
+    }
 
-[Serializable]
-public class HumanMovementSpeedLevelData
-{
-    public float movementSpeed;
-    public int cost;
-}
+    [Serializable]
+    public class HumanMovementSpeedLevelData : ILevelData
+    {
+        public float movementSpeed;
+        public int Cost { get; }
+    }
 
-[Serializable]
-public class HumanAttackIntervalLevelData
-{
-    public float attackInterval;
-    public int cost;
-}
+    [Serializable]
+    public class HumanAttackIntervalLevelData : ILevelData
+    {
+        public float attackInterval;
+        public int Cost { get; }
+    }
 
-[Serializable]
-public class HumanDamageLevelData
-{
-    public int damage;
-    public int cost;
+    [Serializable]
+    public class HumanDamageLevelData : ILevelData
+    {
+        public int damage;
+        public int Cost { get; }
+    }
 }

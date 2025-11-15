@@ -8,18 +8,18 @@ namespace _Game.Features.Humans
         public event Action<int> OnDamageChanged;
         public event Action OnDied;
 
-        public int Health { get; private set; }
-        
-        public int MaximumHealth { get; private set; }
-        
-        public int Damage { get; private set; }
-        
+        public int Health { get; set; }
+
+        public int MaximumHealth { get; set; }
+
+        public int Damage { get; set; }
+
         public bool IsDead => Health <= 0;
 
         public HumanModel(int initialHealth, int initialDamage)
         {
             MaximumHealth = initialHealth;
-            Health = initialHealth;        
+            Health = initialHealth;
             Damage = initialDamage;
         }
 
@@ -46,6 +46,22 @@ namespace _Game.Features.Humans
             {
                 OnDied?.Invoke();
             }
+        }
+        
+        
+        public void SetMaxHealth(int value)
+        {
+            MaximumHealth = value;
+            if (Health > MaximumHealth)
+                Health = MaximumHealth;
+
+            OnHealthChanged?.Invoke(Health, MaximumHealth);
+        }
+
+        public void SetDamage(int value)
+        {
+            Damage = value;
+            OnDamageChanged?.Invoke(Damage);
         }
     }
 }
