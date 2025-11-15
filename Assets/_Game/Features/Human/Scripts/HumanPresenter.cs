@@ -8,13 +8,12 @@ namespace _Game.Features.Humans
     [RequireComponent(typeof(HumanView))]
     public class HumanPresenter : MonoBehaviour
     {
-        [Header("Base Stats")] 
         [SerializeField] private int _baseHealth;
         [SerializeField] private int _baseDamage;
 
         private HumanModel _model;
         private HumanView _view;
-        private BossView _boss;
+        private BossPresenter _boss;
         private Coroutine _attackRoutine;
 
         public bool IsDead => _model.IsDead;
@@ -44,7 +43,7 @@ namespace _Game.Features.Humans
             _model.Train(10, 10);
         }
 
-        public void StartAttacking(BossView bossView)
+        public void StartAttacking(BossPresenter bossView)
         {
             _boss = bossView;
 
@@ -68,7 +67,6 @@ namespace _Game.Features.Humans
 
         private void HandleDied()
         {
-            Debug.Log("Human Dead!");
             if (_attackRoutine != null)
                 StopCoroutine(_attackRoutine);
 
@@ -79,7 +77,7 @@ namespace _Game.Features.Humans
         {
             var wait = new WaitForSeconds(1f);
 
-            while (_boss != null && _boss.IsAlive() && !_model.IsDead)
+            while (_boss != null && _boss.IsAlive && !_model.IsDead)
             {
                 Wallet.AddCoins(_model.Damage);
                 _boss.TakeDamage(_model.Damage);

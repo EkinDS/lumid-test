@@ -8,13 +8,13 @@ namespace _Game.Features.HumansState.Scripts.Combat
 {
     public class CombatState : HumanState
     {
-        private readonly BossView _bossPrefab;
+        private BossPresenter _currentBossView;
 
-        private BossView _currentBossView;
+        private readonly BossPresenter _bossPrefab;
 
         public override bool HasFreeSlot() => true;
 
-        public CombatState(HumanStateController humanStateController, BossView bossPrefab) : base(
+        public CombatState(HumanStateController humanStateController, BossPresenter bossPrefab) : base(
             humanStateController)
         {
             _bossPrefab = bossPrefab;
@@ -41,7 +41,7 @@ namespace _Game.Features.HumansState.Scripts.Combat
             clone.Initialize(100, 1.05f, 1, 5);
             _currentBossView = clone;
             attackers.ForEach(StartToCombat);
-            _currentBossView.BossDefeatedCallback += HandleBossDefeated;
+            _currentBossView.SetDeathCallback(HandleBossDefeated);
         }
 
         private void HandleBossDefeated(List<HumanPresenter> attackers)

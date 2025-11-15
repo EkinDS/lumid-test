@@ -14,7 +14,7 @@ namespace _Game.Features.HumansState.Scripts.Core
     {
         [SerializeField] private GameObject _trainStateView;
         [SerializeField] private HumanPresenter _humanPrefab;
-        [SerializeField] private BossView _bossPrefab;
+        [SerializeField] private BossPresenter _bossPrefab;
 
         private List<HumanState> _states;
 
