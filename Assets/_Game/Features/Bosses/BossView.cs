@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using _Game.Features.Humans;
+using DG.Tweening;
 using UnityEngine;
 
 namespace _Game.Features.Bosses
@@ -13,18 +14,31 @@ namespace _Game.Features.Bosses
 
         public bool IsAlive() => _currentHp > 0;
 
+        [SerializeField] private HealthBar _healthBar;
+        [SerializeField] private SpriteRenderer _spriteRenderer;
+
         private float _lastAttackTime;
         private double _currentHp;
         private float _attackInterval;
         private int _targetsPerAttack;
         private int _damage;
+        private int _maximumHealth;
+        private Vector2 _originalPosition;
+        private Sequence _takeDamageMovementSequence;
+        private Sequence _takeDamageColorSequence;
+        private Sequence _attackMovementSequence;
 
         public void Initialize(double hp, float attackInterval, int targetsPerAttack, double damage)
         {
+            _originalPosition = transform.position;
             _currentHp = hp;
             _attackInterval = attackInterval;
             _targetsPerAttack = targetsPerAttack;
             _damage = (int)damage;
+
+            _maximumHealth = (int)_currentHp;
+
+            _healthBar.SetFillValues((float)_currentHp, _maximumHealth);
         }
 
         private void Update()
@@ -44,6 +58,9 @@ namespace _Game.Features.Bosses
                 {
                     var target = _attackers[i];
                     target.TakeDamage(_damage);
+
+                   AnimateAttack();
+
                     if (target.IsDead())
                     {
                         defeatedHumans.Add(target);
@@ -62,10 +79,14 @@ namespace _Game.Features.Bosses
         public void TakeDamage(double damage)
         {
             _currentHp = Math.Max(0, _currentHp - damage);
+
+            _healthBar.SetFillValues((float)_currentHp, _maximumHealth);
+
+            AnimateTakingDamage();
+
             if (!(_currentHp <= 0))
                 return;
 
-            Debug.Log("Boss Defeated!");
             BossDefeatedCallback.Invoke(_attackers);
             Destroy(gameObject);
         }
@@ -76,6 +97,48 @@ namespace _Game.Features.Bosses
             {
                 _attackers.Add(humanView);
             }
+        }
+
+
+        private void AnimateAttack()
+        {
+            _attackMovementSequence.Kill();
+            _takeDamageMovementSequence.Kill();
+            _takeDamageColorSequence.Kill();        
+            
+            _spriteRenderer.color = Color.white;
+            transform.position = _originalPosition;
+            
+            _attackMovementSequence = DOTween.Sequence();
+            _attackMovementSequence.Append(transform.DOLocalMoveY(_originalPosition.y - 0.2F, 0.05F));
+            _attackMovementSequence.Append(transform.DOLocalMoveY(_originalPosition.y, 0.05F));
+        }
+
+
+        private void AnimateTakingDamage()
+        {
+            _attackMovementSequence.Kill();
+            _takeDamageMovementSequence.Kill();
+            _takeDamageColorSequence.Kill();        
+            
+            transform.position = _originalPosition;
+            _spriteRenderer.color = Color.white;
+            
+            _takeDamageMovementSequence = DOTween.Sequence();
+            _takeDamageMovementSequence.Append(_spriteRenderer.DOColor(Color.red, 0.05f));
+            _takeDamageMovementSequence.Append(_spriteRenderer.DOColor(Color.white, 0.05f));
+
+            transform.position = _originalPosition;
+            _takeDamageColorSequence = DOTween.Sequence();
+            _takeDamageColorSequence.Append(transform.DOLocalMoveY(_originalPosition.y + 0.2F, 0.05F));
+            _takeDamageColorSequence.Append(transform.DOLocalMoveY(_originalPosition.y, 0.05F));
+        }
+
+        private void OnDestroy()
+        {
+            _takeDamageMovementSequence.Kill();
+            _takeDamageColorSequence.Kill();
+            _attackMovementSequence.Kill();
         }
     }
 }
