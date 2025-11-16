@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using _Game.Features.Bosses;
+using _Game.Features.HumansState.Scripts.Core;
 using _Game.Features.PlayerWallet;
 using UnityEngine;
 
@@ -9,9 +10,6 @@ namespace _Game.Features.Humans
     [RequireComponent(typeof(HumanView))]
     public class HumanPresenter : MonoBehaviour
     {
-        [SerializeField] private int _baseHealth;
-        [SerializeField] private int _baseDamage;
-
         private HumanModel _model;
         private HumanView _view;
         private BossPresenter _boss;
@@ -24,24 +22,26 @@ namespace _Game.Features.Humans
             _view = GetComponent<HumanView>();
         }
 
-        public void Initialize()
+        public void Initialize(HumanStateController humanStateController)
         {
-            _model = new HumanModel(_baseHealth, _baseDamage);
+            _model = new HumanModel(humanStateController. GetHumanData());
 
-            _model.OnHealthChanged += HandleHealthChanged;
+            _model.OnMaximumHealthChanged += HandleMaximumHealthChanged;
+            _model.OnDamageChanged += HandleDamageChanged;
+            _model.OnMovementSpeedChanged += HandleMovementSpeedChanged;
+            _model.OnAttackIntervalChanged += HandleAttackIntervalChanged;
             _model.OnDied += HandleDied;
-
-            _view.ArrangeHealthBar(_model.Health, _model.MaximumHealth);
         }
         
         public void MoveTo(Vector3 targetPosition, System.Action<HumanPresenter> onReached)
         {
-            _view.MoveTo(targetPosition, 1F, () => onReached?.Invoke(this));
+            _view.MoveTo(targetPosition, _model.MovementSpeed, () => onReached?.Invoke(this));
         }
 
         public void Train()
         {
-            _model.Train(_model.MaximumHealth, _model.Damage, _model.MovementSpeed, _model.AttackInterval);
+            _model.Train();
+            _view.ArrangeHealthBar(_model.Health, _model.MaximumHealth);
         }
 
         public void StartAttacking(BossPresenter bossView)
@@ -61,24 +61,27 @@ namespace _Game.Features.Humans
             _view.PlayHitAnimationDown();
         }
         
-        private void HandleHealthChanged(int current, int max)
+        private void HandleMaximumHealthChanged(int health)
         {
-            _view.ArrangeHealthBar(current, max);
+            _model.MaximumHealthToBeAfterTraining = health;
+            //_view.ArrangeHealthBar(current, max);
         }
         
-        private void HandleDamageChanged(int current, int max)
+        private void HandleDamageChanged(int damage)
         {
-            _view.ArrangeHealthBar(current, max);
+            _model.DamageToBeAfterTraining = damage;
         }
         
-        private void HandleMovementSpeedChanged(int current, int max)
+        private void HandleMovementSpeedChanged(float movementSpeed)
         {
-            _view.ArrangeHealthBar(current, max);
+            _model.MovementSpeedToBeAfterTraining = movementSpeed;
+
         }
         
-        private void HandleAttackIntervalChanged(int current, int max)
+        private void HandleAttackIntervalChanged(float attackInterval)
         {
-            _view.ArrangeHealthBar(current, max);
+            _model.AttackIntervalToBeAfterTraining = attackInterval;
+
         }
         
         private IEnumerator AttackLoop()
@@ -100,24 +103,24 @@ namespace _Game.Features.Humans
         public event Action<HumanPresenter> OnHumanDied;
 
 
-        public void SetMaxHealth(int newMax)
+        public void SetMaxHealthToBeAfterTraining(int newMax)
         {
-            _model.SetMaxHealth(newMax);
+            _model.SetMaxHealthToBeAfterTraining(newMax);
         }
 
-        public void SetMoveSpeed(float newSpeed)
+        public void SetMoveSpeedToBeAfterTraining(float newSpeed)
         {
-            _model.SetMovementSpeed(newSpeed);
+            _model.SetMovementSpeedToBeAfterTraining(newSpeed);
         }
 
-        public void SetAttackInterval(float newInterval)
+        public void SetAttackIntervalToBeAfterTraining(float newInterval)
         {
-            _model.SetAttackInterval(newInterval);
+            _model.SetAttackIntervalToBeAfterTraining(newInterval);
         }
 
-        public void SetDamage(int newDamage)
+        public void SetDamageToBeAfterTraining(int newDamage)
         {
-            _model.SetDamage(newDamage);
+            _model.SetDamageToBeAfterTraining(newDamage);
         }
 
         private void HandleDied()

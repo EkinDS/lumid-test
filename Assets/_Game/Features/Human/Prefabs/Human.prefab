@@ -61,8 +61,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3f5719db76ccad44a55e7ff19dc3939, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _baseHealth: 10
-  _baseDamage: 10
 --- !u!1 &7123741550956967415
 GameObject:
   m_ObjectHideFlags: 0
@@ -158,6 +156,10 @@ PrefabInstance:
     - target: {fileID: 1433904856189012800, guid: aa39f84980f324745a5dacb89211fda6, type: 3}
       propertyPath: m_Name
       value: HealthBarUi
+      objectReference: {fileID: 0}
+    - target: {fileID: 1433904856189012800, guid: aa39f84980f324745a5dacb89211fda6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7331184854120097716, guid: aa39f84980f324745a5dacb89211fda6, type: 3}
       propertyPath: m_Pivot.x

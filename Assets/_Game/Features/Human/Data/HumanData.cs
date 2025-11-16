@@ -5,15 +5,15 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "HumanData", menuName = "ScriptableObjects/HumanData", order = 1)]
 public class HumanData : ScriptableObject
 {
-    public List<HumanHealthLevelData> humanHealthLevelData = new List<HumanHealthLevelData>();
+    public List<HumanMaximumHealthLevelData> humanMaximumHealthLevelData = new List<HumanMaximumHealthLevelData>();
     public List<HumanMovementSpeedLevelData> humanMovementSpeedLevelData = new List<HumanMovementSpeedLevelData>();
     public List<HumanAttackIntervalLevelData> humanAttackIntervalLevelData = new List<HumanAttackIntervalLevelData>();
     public List<HumanDamageLevelData> humanDamageLevelData = new List<HumanDamageLevelData>();
 
     [Serializable]
-    public class HumanHealthLevelData : LevelData
+    public class HumanMaximumHealthLevelData : LevelData
     {
-        public int health;
+        public int maximumHealth;
     }
 
     [Serializable]

@@ -8,7 +8,6 @@ public class TrainingSlotUI : MonoBehaviour
 {
     [SerializeField] private GameObject upgradeButtonsContainer;
     [SerializeField] private HumanStateController _controller;
-    [SerializeField] private HumanData _data;
     [SerializeField] private List<UpgradeButton> _buttons;
 
     private bool upgradesAreShown;
@@ -62,39 +61,41 @@ public class TrainingSlotUI : MonoBehaviour
     {
         int level = _levels[upgradeButton.type];
 
+        HumanData data = _controller.GetHumanData();
+        
         switch (upgradeButton.type)
         {
             case HumanStatType.Health:
-                RefreshGeneric(upgradeButton, level, _data.humanHealthLevelData.Count,
-                    _data.humanHealthLevelData[level].health,
-                    level + 1 < _data.humanHealthLevelData.Count ? _data.humanHealthLevelData[level + 1].health : -1,
-                    level + 1 < _data.humanHealthLevelData.Count ? _data.humanHealthLevelData[level + 1].cost : -1);
+                RefreshGeneric(upgradeButton, level, data.humanMaximumHealthLevelData.Count,
+                    data.humanMaximumHealthLevelData[level].maximumHealth,
+                    level + 1 < data.humanMaximumHealthLevelData.Count ? data.humanMaximumHealthLevelData[level + 1].maximumHealth : -1,
+                    level + 1 < data.humanMaximumHealthLevelData.Count ? data.humanMaximumHealthLevelData[level + 1].cost : -1);
                 break;
             case HumanStatType.MoveSpeed:
-                RefreshGeneric(upgradeButton, level, _data.humanMovementSpeedLevelData.Count,
-                    _data.humanMovementSpeedLevelData[level].movementSpeed.ToString("0.0"),
-                    level + 1 < _data.humanMovementSpeedLevelData.Count
-                        ? _data.humanMovementSpeedLevelData[level + 1].movementSpeed.ToString("0.0")
+                RefreshGeneric(upgradeButton, level, data.humanMovementSpeedLevelData.Count,
+                    data.humanMovementSpeedLevelData[level].movementSpeed.ToString("0.0"),
+                    level + 1 < data.humanMovementSpeedLevelData.Count
+                        ? data.humanMovementSpeedLevelData[level + 1].movementSpeed.ToString("0.0")
                         : "MAX",
-                    level + 1 < _data.humanMovementSpeedLevelData.Count
-                        ? _data.humanMovementSpeedLevelData[level + 1].cost
+                    level + 1 < data.humanMovementSpeedLevelData.Count
+                        ? data.humanMovementSpeedLevelData[level + 1].cost
                         : -1);
                 break;
             case HumanStatType.AttackInterval:
-                RefreshGeneric(upgradeButton, level, _data.humanAttackIntervalLevelData.Count,
-                    _data.humanAttackIntervalLevelData[level].attackInterval.ToString("0.00"),
-                    level + 1 < _data.humanAttackIntervalLevelData.Count
-                        ? _data.humanAttackIntervalLevelData[level + 1].attackInterval.ToString("0.00")
+                RefreshGeneric(upgradeButton, level, data.humanAttackIntervalLevelData.Count,
+                    data.humanAttackIntervalLevelData[level].attackInterval.ToString("0.00"),
+                    level + 1 < data.humanAttackIntervalLevelData.Count
+                        ? data.humanAttackIntervalLevelData[level + 1].attackInterval.ToString("0.00")
                         : "MAX",
-                    level + 1 < _data.humanAttackIntervalLevelData.Count
-                        ? _data.humanAttackIntervalLevelData[level + 1].cost
+                    level + 1 < data.humanAttackIntervalLevelData.Count
+                        ? data.humanAttackIntervalLevelData[level + 1].cost
                         : -1);
                 break;
             case HumanStatType.Damage:
-                RefreshGeneric(upgradeButton, level, _data.humanDamageLevelData.Count,
-                    _data.humanDamageLevelData[level].damage,
-                    level + 1 < _data.humanDamageLevelData.Count ? _data.humanDamageLevelData[level + 1].damage : -1,
-                    level + 1 < _data.humanDamageLevelData.Count ? _data.humanDamageLevelData[level + 1].cost : -1);
+                RefreshGeneric(upgradeButton, level, data.humanDamageLevelData.Count,
+                    data.humanDamageLevelData[level].damage,
+                    level + 1 < data.humanDamageLevelData.Count ? data.humanDamageLevelData[level + 1].damage : -1,
+                    level + 1 < data.humanDamageLevelData.Count ? data.humanDamageLevelData[level + 1].cost : -1);
                 break;
         }
     }
@@ -115,12 +116,14 @@ public class TrainingSlotUI : MonoBehaviour
     {
         var level = _levels[type];
 
+        HumanData data = _controller.GetHumanData();
+
         int cost = type switch
         {
-            HumanStatType.Health => NextCost(_data.humanHealthLevelData, level),
-            HumanStatType.MoveSpeed => NextCost(_data.humanMovementSpeedLevelData, level),
-            HumanStatType.AttackInterval => NextCost(_data.humanAttackIntervalLevelData, level),
-            HumanStatType.Damage => NextCost(_data.humanDamageLevelData, level),
+            HumanStatType.Health => NextCost(data.humanMaximumHealthLevelData, level),
+            HumanStatType.MoveSpeed => NextCost(data.humanMovementSpeedLevelData, level),
+            HumanStatType.AttackInterval => NextCost(data.humanAttackIntervalLevelData, level),
+            HumanStatType.Damage => NextCost(data.humanDamageLevelData, level),
             _ => -1
         };
 
@@ -139,24 +142,26 @@ public class TrainingSlotUI : MonoBehaviour
 
     private void ApplyStat(HumanStatType type)
     {
+        HumanData data = _controller.GetHumanData();
+
         foreach (var h in _controller.Humans)
         {
             switch (type)
             {
                 case HumanStatType.Health:
-                    h.SetMaxHealth(_data.humanHealthLevelData[_levels[type]].health);
+                    h.SetMaxHealthToBeAfterTraining(data.humanMaximumHealthLevelData[_levels[type]].maximumHealth);
                     break;
 
                 case HumanStatType.MoveSpeed:
-                    h.SetMoveSpeed(_data.humanMovementSpeedLevelData[_levels[type]].movementSpeed);
+                    h.SetMoveSpeedToBeAfterTraining(data.humanMovementSpeedLevelData[_levels[type]].movementSpeed);
                     break;
 
                 case HumanStatType.AttackInterval:
-                    h.SetAttackInterval(_data.humanAttackIntervalLevelData[_levels[type]].attackInterval);
+                    h.SetAttackIntervalToBeAfterTraining(data.humanAttackIntervalLevelData[_levels[type]].attackInterval);
                     break;
 
                 case HumanStatType.Damage:
-                    h.SetDamage(_data.humanDamageLevelData[_levels[type]].damage);
+                    h.SetDamageToBeAfterTraining(data.humanDamageLevelData[_levels[type]].damage);
                     break;
             }
         }

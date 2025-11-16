@@ -12,27 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2921167d6a129de469fb42ff729975fb, type: 3}
   m_Name: HumanData
   m_EditorClassIdentifier: 
-  humanHealthLevelData:
+  humanMaximumHealthLevelData:
   - cost: 0
-    health: 10
-  - cost: 200
-    health: 12
-  - cost: 300
-    health: 14
-  - cost: 400
-    health: 16
+    maximumHealth: 10
   - cost: 500
-    health: 18
+    maximumHealth: 12
   - cost: 600
-    health: 20
+    maximumHealth: 14
   - cost: 700
-    health: 22
+    maximumHealth: 16
   - cost: 800
-    health: 24
+    maximumHealth: 18
   - cost: 900
-    health: 26
+    maximumHealth: 20
   - cost: 1000
-    health: 28
+    maximumHealth: 22
+  - cost: 1100
+    maximumHealth: 24
+  - cost: 1200
+    maximumHealth: 26
+  - cost: 1300
+    maximumHealth: 28
   humanMovementSpeedLevelData:
   - cost: 0
     movementSpeed: 1

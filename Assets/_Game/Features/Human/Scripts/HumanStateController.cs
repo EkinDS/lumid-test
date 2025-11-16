@@ -12,13 +12,15 @@ namespace _Game.Features.HumansState.Scripts.Core
 {
     public class HumanStateController : MonoBehaviour
     {
-        [SerializeField] private GameObject _trainStateView;
         [SerializeField] private HumanPresenter _humanPrefab;
         [SerializeField] private BossPresenter _bossPrefab;
+        [SerializeField] private HumanData _data;
 
         public List<HumanPresenter> Humans { get; } = new();
 
         private List<HumanState> _states;
+        
+        
 
         private void Start()
         {
@@ -32,6 +34,12 @@ namespace _Game.Features.HumansState.Scripts.Core
             };
 
             TransitionTo<SpawnState>(null);
+        }
+
+
+        public HumanData GetHumanData()
+        {
+            return _data;
         }
 
         public void TransitionTo<T>(HumanPresenter human = null) where T : HumanState

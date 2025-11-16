@@ -9,6 +9,8 @@ public class HealthBar : MonoBehaviour
     public void SetFillAmount(float currentHealth, float maximumHealth)
     {
         float percentage = currentHealth / maximumHealth;
+        print(currentHealth + " / " + maximumHealth);
         fillerSprite.fillAmount = percentage;
+        gameObject.SetActive(true);
     }
 }

@@ -29,7 +29,7 @@ namespace _Game.Features.HumansState.Scripts.Spawn
         private void SpawnHuman()
         {
             var human = GameObject.Instantiate(_humanPrefab, new Vector3(0F, -4.8F, 0F), Quaternion.identity);
-            human.Initialize();
+            human.Initialize(humanStateController);
 
             humanStateController.RegisterHuman(human);
 

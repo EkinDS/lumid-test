@@ -2,42 +2,51 @@ using System;
 
 namespace _Game.Features.Humans
 {
+    [Serializable]
     public class HumanModel
     {
-        public event Action<int, int> OnHealthChanged;
+        public event Action<int> OnMaximumHealthChanged;
         public event Action<int> OnDamageChanged;
         public event Action<float> OnMovementSpeedChanged;
         public event Action<float> OnAttackIntervalChanged;
         public event Action OnDied;
 
-        public int Health { get; set; }
+        public int Health;
+        public int MaximumHealth;
+        public int Damage;
+        public float AttackInterval;
+        public float MovementSpeed;
 
-        public int MaximumHealth { get; set; }
-
-        public int Damage { get; set; }
-        public float AttackInterval { get; set; }
-        public float MovementSpeed { get; set; }
+        public int MaximumHealthToBeAfterTraining;
+        public int DamageToBeAfterTraining;
+        public float AttackIntervalToBeAfterTraining;
+        public float MovementSpeedToBeAfterTraining;
 
         public bool IsDead => Health <= 0;
 
-        public HumanModel(int initialHealth, int initialDamage)
+        public HumanModel(HumanData humanData)
         {
-            MaximumHealth = initialHealth;
-            Health = initialHealth;
-            Damage = initialDamage;
-            MovementSpeed = initialDamage;
-            AttackInterval = initialDamage;
+            MovementSpeed = humanData.humanMovementSpeedLevelData[0].movementSpeed;
+            MaximumHealth = humanData.humanMaximumHealthLevelData[0].maximumHealth;
+            AttackInterval = humanData.humanAttackIntervalLevelData[0].attackInterval;
+            Damage = humanData.humanDamageLevelData[0].damage;
+            Health = MaximumHealth;
+
+            MaximumHealthToBeAfterTraining = MaximumHealth;
+            DamageToBeAfterTraining = Damage;
+            AttackIntervalToBeAfterTraining = AttackInterval;
+            MovementSpeedToBeAfterTraining = MovementSpeed;
         }
 
-        public void Train(int healthIncrease, int damageIncrease, float movementSpeedIncrease, float attackIntervalChange)
+        public void Train()
         {
-            MaximumHealth += healthIncrease;
-            Health += healthIncrease;
-            Damage += damageIncrease;
-            AttackInterval += attackIntervalChange;
-            MovementSpeed += movementSpeedIncrease;
+            MaximumHealth = MaximumHealthToBeAfterTraining;
+            Health = MaximumHealthToBeAfterTraining;
+            Damage = DamageToBeAfterTraining;
+            AttackInterval = AttackIntervalToBeAfterTraining;
+            MovementSpeed = MovementSpeedToBeAfterTraining;
 
-            OnHealthChanged?.Invoke(Health, MaximumHealth);
+            OnMaximumHealthChanged?.Invoke(MaximumHealth);
             OnDamageChanged?.Invoke(Damage);
             OnAttackIntervalChanged?.Invoke(AttackInterval);
             OnMovementSpeedChanged?.Invoke(MovementSpeed);
@@ -49,45 +58,32 @@ namespace _Game.Features.Humans
 
             Health -= amount;
             if (Health < 0) Health = 0;
-
-            OnHealthChanged?.Invoke(Health, MaximumHealth);
-
+            
             if (IsDead)
             {
                 OnDied?.Invoke();
             }
         }
-        
-        
-        public void SetMaxHealth(int value)
-        {
-            float currentPercentage = (float)Health / (float)MaximumHealth;
-            
-            MaximumHealth = value;
-            Health = (int)(MaximumHealth * currentPercentage);
-            
-            if (Health > MaximumHealth)
-                Health = MaximumHealth;
 
-            OnHealthChanged?.Invoke(Health, MaximumHealth);
+
+        public void SetMaxHealthToBeAfterTraining(int value)
+        {
+            MaximumHealthToBeAfterTraining = value;
         }
 
-        public void SetDamage(int value)
+        public void SetDamageToBeAfterTraining(int value)
         {
-            Damage = value;
-            OnDamageChanged?.Invoke(Damage);
+            DamageToBeAfterTraining = value;
         }
 
-        public void SetMovementSpeed(float value)
+        public void SetMovementSpeedToBeAfterTraining(float value)
         {
-            MovementSpeed = value;
-            OnMovementSpeedChanged?.Invoke(MovementSpeed);
+            MovementSpeedToBeAfterTraining = value;
         }
 
-        public void SetAttackInterval(float value)
+        public void SetAttackIntervalToBeAfterTraining(float value)
         {
-            AttackInterval = value;
-            OnAttackIntervalChanged?.Invoke(AttackInterval);
+            AttackIntervalToBeAfterTraining = value;
         }
     }
 }
