@@ -12,7 +12,7 @@ public class TrainingSlotUI : MonoBehaviour
     [SerializeField] private List<UpgradeButton> _buttons;
 
     private bool upgradesAreShown;
-    
+
     private readonly Dictionary<HumanStatType, int> _levels = new();
 
     private void Awake()
@@ -26,11 +26,15 @@ public class TrainingSlotUI : MonoBehaviour
         }
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        RefreshAll();
+        Wallet.OnCoinsChanged += HandleCoinsChanged;
     }
 
+    private void OnDisable()
+    {
+        Wallet.OnCoinsChanged -= HandleCoinsChanged;
+    }
 
     public void ArrowButtonClicked()
     {
@@ -41,8 +45,10 @@ public class TrainingSlotUI : MonoBehaviour
         else
         {
             upgradeButtonsContainer.gameObject.SetActive(true);
+
+            RefreshAll();
         }
-        
+
         upgradesAreShown = !upgradesAreShown;
     }
 
@@ -52,49 +58,54 @@ public class TrainingSlotUI : MonoBehaviour
             Refresh(btn);
     }
 
-    private void Refresh(UpgradeButton btn)
+    private void Refresh(UpgradeButton upgradeButton)
     {
-        int level = _levels[btn.type];
+        int level = _levels[upgradeButton.type];
 
-        switch (btn.type)
+        switch (upgradeButton.type)
         {
             case HumanStatType.Health:
-                RefreshGeneric(btn, level, _data.humanLevelData.Count,
-                    _data.humanLevelData[level].health,
-                    level + 1 < _data.humanLevelData.Count ? _data.humanLevelData[level + 1].health : -1,
-                    level + 1 < _data.humanLevelData.Count ? _data.humanLevelData[level + 1].Cost : -1);
+                RefreshGeneric(upgradeButton, level, _data.humanHealthLevelData.Count,
+                    _data.humanHealthLevelData[level].health,
+                    level + 1 < _data.humanHealthLevelData.Count ? _data.humanHealthLevelData[level + 1].health : -1,
+                    level + 1 < _data.humanHealthLevelData.Count ? _data.humanHealthLevelData[level + 1].cost : -1);
                 break;
-
             case HumanStatType.MoveSpeed:
-                RefreshGeneric(btn, level, _data.humanMovementSpeedLevelData.Count,
+                RefreshGeneric(upgradeButton, level, _data.humanMovementSpeedLevelData.Count,
                     _data.humanMovementSpeedLevelData[level].movementSpeed.ToString("0.0"),
-                    level + 1 < _data.humanMovementSpeedLevelData.Count ? _data.humanMovementSpeedLevelData[level + 1].movementSpeed.ToString("0.0") : "MAX",
-                    level + 1 < _data.humanMovementSpeedLevelData.Count ? _data.humanMovementSpeedLevelData[level + 1].Cost : -1);
+                    level + 1 < _data.humanMovementSpeedLevelData.Count
+                        ? _data.humanMovementSpeedLevelData[level + 1].movementSpeed.ToString("0.0")
+                        : "MAX",
+                    level + 1 < _data.humanMovementSpeedLevelData.Count
+                        ? _data.humanMovementSpeedLevelData[level + 1].cost
+                        : -1);
                 break;
-
             case HumanStatType.AttackInterval:
-                RefreshGeneric(btn, level, _data.humanAttackIntervalLevelData.Count,
-                    _data.humanAttackIntervalLevelData[level].attackInterval.ToString("0.0"),
-                    level + 1 < _data.humanAttackIntervalLevelData.Count ? _data.humanAttackIntervalLevelData[level + 1].attackInterval.ToString("0.0") : "MAX",
-                    level + 1 < _data.humanAttackIntervalLevelData.Count ? _data.humanAttackIntervalLevelData[level + 1].Cost : -1);
+                RefreshGeneric(upgradeButton, level, _data.humanAttackIntervalLevelData.Count,
+                    _data.humanAttackIntervalLevelData[level].attackInterval.ToString("0.00"),
+                    level + 1 < _data.humanAttackIntervalLevelData.Count
+                        ? _data.humanAttackIntervalLevelData[level + 1].attackInterval.ToString("0.00")
+                        : "MAX",
+                    level + 1 < _data.humanAttackIntervalLevelData.Count
+                        ? _data.humanAttackIntervalLevelData[level + 1].cost
+                        : -1);
                 break;
-
             case HumanStatType.Damage:
-                RefreshGeneric(btn, level, _data.humanDamageLevelData.Count,
+                RefreshGeneric(upgradeButton, level, _data.humanDamageLevelData.Count,
                     _data.humanDamageLevelData[level].damage,
                     level + 1 < _data.humanDamageLevelData.Count ? _data.humanDamageLevelData[level + 1].damage : -1,
-                    level + 1 < _data.humanDamageLevelData.Count ? _data.humanDamageLevelData[level + 1].Cost : -1);
+                    level + 1 < _data.humanDamageLevelData.Count ? _data.humanDamageLevelData[level + 1].cost : -1);
                 break;
         }
     }
 
-    private void RefreshGeneric(UpgradeButton btn, int level, int maxLevel, 
-                                object current, object next, int cost)
+    private void RefreshGeneric(UpgradeButton btn, int level, int maxLevel,
+        object current, object next, int cost)
     {
         string nextVal = next.ToString() == "-1" ? "MAX" : next.ToString();
         string costText = cost < 0 ? "MAX" : cost.ToString();
 
-        btn.UpdateDisplay(current.ToString(), nextVal, costText);
+        btn.UpdateDisplay(current.ToString(), level, nextVal, costText, level >= maxLevel);
 
         var button = btn.GetComponent<Button>();
         button.interactable = cost >= 0 && Wallet.GetCoins() >= cost;
@@ -106,10 +117,10 @@ public class TrainingSlotUI : MonoBehaviour
 
         int cost = type switch
         {
-            HumanStatType.Health         => NextCost(_data.humanLevelData, level),
-            HumanStatType.MoveSpeed      => NextCost(_data.humanMovementSpeedLevelData, level),
+            HumanStatType.Health => NextCost(_data.humanHealthLevelData, level),
+            HumanStatType.MoveSpeed => NextCost(_data.humanMovementSpeedLevelData, level),
             HumanStatType.AttackInterval => NextCost(_data.humanAttackIntervalLevelData, level),
-            HumanStatType.Damage         => NextCost(_data.humanDamageLevelData, level),
+            HumanStatType.Damage => NextCost(_data.humanDamageLevelData, level),
             _ => -1
         };
 
@@ -123,8 +134,8 @@ public class TrainingSlotUI : MonoBehaviour
         RefreshAll();
     }
 
-    private int NextCost<T>(List<T> list, int level) where T : ILevelData
-        => level + 1 < list.Count ? list[level + 1].Cost : -1;
+    private int NextCost<T>(List<T> list, int level) where T : HumanData.LevelData
+        => level + 1 < list.Count ? list[level + 1].cost : -1;
 
     private void ApplyStat(HumanStatType type)
     {
@@ -133,7 +144,7 @@ public class TrainingSlotUI : MonoBehaviour
             switch (type)
             {
                 case HumanStatType.Health:
-                    h.SetMaxHealth(_data.humanLevelData[_levels[type]].health);
+                    h.SetMaxHealth(_data.humanHealthLevelData[_levels[type]].health);
                     break;
 
                 case HumanStatType.MoveSpeed:
@@ -150,9 +161,10 @@ public class TrainingSlotUI : MonoBehaviour
             }
         }
     }
-}
 
-public interface ILevelData
-{
-    int Cost { get; }
+    private void HandleCoinsChanged(int newCoins)
+    {
+        if (upgradesAreShown)
+            RefreshAll();
+    }
 }

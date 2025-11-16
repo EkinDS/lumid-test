@@ -6,6 +6,8 @@ namespace _Game.Features.Humans
     {
         public event Action<int, int> OnHealthChanged;
         public event Action<int> OnDamageChanged;
+        public event Action<float> OnMovementSpeedChanged;
+        public event Action<float> OnAttackIntervalChanged;
         public event Action OnDied;
 
         public int Health { get; set; }
@@ -13,6 +15,8 @@ namespace _Game.Features.Humans
         public int MaximumHealth { get; set; }
 
         public int Damage { get; set; }
+        public float AttackInterval { get; set; }
+        public float MovementSpeed { get; set; }
 
         public bool IsDead => Health <= 0;
 
@@ -23,14 +27,18 @@ namespace _Game.Features.Humans
             Damage = initialDamage;
         }
 
-        public void Train(int healthIncrease, int damageIncrease)
+        public void Train(int healthIncrease, int damageIncrease, float movementSpeedIncrease, float attackIntervalChange)
         {
             MaximumHealth += healthIncrease;
             Health += healthIncrease;
             Damage += damageIncrease;
+            AttackInterval += attackIntervalChange;
+            MovementSpeed += movementSpeedIncrease;
 
             OnHealthChanged?.Invoke(Health, MaximumHealth);
             OnDamageChanged?.Invoke(Damage);
+            OnAttackIntervalChanged?.Invoke(AttackInterval);
+            OnMovementSpeedChanged?.Invoke(MovementSpeed);
         }
 
         public void TakeDamage(int amount)
@@ -51,7 +59,11 @@ namespace _Game.Features.Humans
         
         public void SetMaxHealth(int value)
         {
+            float currentPercentage = (float)Health / (float)MaximumHealth;
+            
             MaximumHealth = value;
+            Health = (int)(MaximumHealth * currentPercentage);
+            
             if (Health > MaximumHealth)
                 Health = MaximumHealth;
 
@@ -62,6 +74,18 @@ namespace _Game.Features.Humans
         {
             Damage = value;
             OnDamageChanged?.Invoke(Damage);
+        }
+
+        public void SetMovementSpeed(float value)
+        {
+            MovementSpeed = value;
+            OnMovementSpeedChanged?.Invoke(MovementSpeed);
+        }
+
+        public void SetAttackInterval(float value)
+        {
+            AttackInterval = value;
+            OnAttackIntervalChanged?.Invoke(AttackInterval);
         }
     }
 }

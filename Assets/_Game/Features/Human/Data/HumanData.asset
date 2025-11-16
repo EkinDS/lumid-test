@@ -12,31 +12,87 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2921167d6a129de469fb42ff729975fb, type: 3}
   m_Name: HumanData
   m_EditorClassIdentifier: 
-  humanLevelData:
-  - health: 10
-    cost: 100
-  - health: 15
-    cost: 200
-  - health: 20
-    cost: 300
+  humanHealthLevelData:
+  - cost: 0
+    health: 10
+  - cost: 200
+    health: 12
+  - cost: 300
+    health: 14
+  - cost: 400
+    health: 16
+  - cost: 500
+    health: 18
+  - cost: 600
+    health: 20
+  - cost: 700
+    health: 22
+  - cost: 800
+    health: 24
+  - cost: 900
+    health: 26
+  - cost: 1000
+    health: 28
   humanMovementSpeedLevelData:
-  - movementSpeed: 1
-    cost: 100
-  - movementSpeed: 1.2
-    cost: 200
-  - movementSpeed: 1.4
-    cost: 300
+  - cost: 0
+    movementSpeed: 1
+  - cost: 100
+    movementSpeed: 1.2
+  - cost: 150
+    movementSpeed: 1.4
+  - cost: 200
+    movementSpeed: 1.6
+  - cost: 250
+    movementSpeed: 1.8
+  - cost: 300
+    movementSpeed: 2
+  - cost: 350
+    movementSpeed: 2.2
+  - cost: 400
+    movementSpeed: 2.4
+  - cost: 450
+    movementSpeed: 2.6
+  - cost: 500
+    movementSpeed: 2.8
   humanAttackIntervalLevelData:
-  - attackInterval: 1
-    cost: 100
-  - attackInterval: 0.9
-    cost: 200
-  - attackInterval: 0.8
-    cost: 300
+  - cost: 0
+    attackInterval: 1
+  - cost: 400
+    attackInterval: 0.95
+  - cost: 800
+    attackInterval: 0.9
+  - cost: 1200
+    attackInterval: 0.85
+  - cost: 1600
+    attackInterval: 0.8
+  - cost: 2000
+    attackInterval: 0.75
+  - cost: 2400
+    attackInterval: 0.7
+  - cost: 2800
+    attackInterval: 0.65
+  - cost: 3200
+    attackInterval: 0.6
+  - cost: 3600
+    attackInterval: 0.55
   humanDamageLevelData:
-  - damage: 10
-    cost: 100
-  - damage: 15
-    cost: 200
-  - damage: 20
-    cost: 300
+  - cost: 0
+    damage: 10
+  - cost: 100
+    damage: 11
+  - cost: 400
+    damage: 12
+  - cost: 700
+    damage: 13
+  - cost: 1000
+    damage: 14
+  - cost: 1300
+    damage: 15
+  - cost: 1700
+    damage: 16
+  - cost: 2000
+    damage: 17
+  - cost: 2300
+    damage: 18
+  - cost: 2700
+    damage: 19

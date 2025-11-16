@@ -27,7 +27,7 @@ namespace _Game.Features.HumansState.Scripts.Core
                 new SpawnState(this, _humanPrefab),
                 new PortalState(this),
                 new WaitingState(this),
-                new TrainingState(this, _trainStateView),
+                new TrainingState(this),
                 new CombatState(this, _bossPrefab),
             };
 
@@ -58,14 +58,12 @@ namespace _Game.Features.HumansState.Scripts.Core
             return false;
         }
 
-        // 🔹 Spawn eden state burayı kullanacak
         public void RegisterHuman(HumanPresenter human)
         {
             if (!Humans.Contains(human))
                 Humans.Add(human);
         }
 
-        // 🔹 Ölen human burayı çağıracak
         public void UnregisterHuman(HumanPresenter human)
         {
             Humans.Remove(human);

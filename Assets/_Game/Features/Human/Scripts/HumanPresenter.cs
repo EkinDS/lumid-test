@@ -66,6 +66,21 @@ namespace _Game.Features.Humans
             _view.ArrangeHealthBar(current, max);
         }
         
+        private void HandleDamageChanged(int current, int max)
+        {
+            _view.ArrangeHealthBar(current, max);
+        }
+        
+        private void HandleMovementSpeedChanged(int current, int max)
+        {
+            _view.ArrangeHealthBar(current, max);
+        }
+        
+        private void HandleAttackIntervalChanged(int current, int max)
+        {
+            _view.ArrangeHealthBar(current, max);
+        }
+        
         private IEnumerator AttackLoop()
         {
             var wait = new WaitForSeconds(1f);
@@ -92,12 +107,12 @@ namespace _Game.Features.Humans
 
         public void SetMoveSpeed(float newSpeed)
         {
-            
+            _model.SetMovementSpeed(newSpeed);
         }
 
         public void SetAttackInterval(float newInterval)
         {
-            
+            _model.SetAttackInterval(newInterval);
         }
 
         public void SetDamage(int newDamage)
