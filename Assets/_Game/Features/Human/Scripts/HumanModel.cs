@@ -25,6 +25,8 @@ namespace _Game.Features.Humans
             MaximumHealth = initialHealth;
             Health = initialHealth;
             Damage = initialDamage;
+            MovementSpeed = initialDamage;
+            AttackInterval = initialDamage;
         }
 
         public void Train(int healthIncrease, int damageIncrease, float movementSpeedIncrease, float attackIntervalChange)

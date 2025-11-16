@@ -41,7 +41,7 @@ namespace _Game.Features.Humans
 
         public void Train()
         {
-            _model.Train(10, 10);
+            _model.Train(_model.MaximumHealth, _model.Damage, _model.MovementSpeed, _model.AttackInterval);
         }
 
         public void StartAttacking(BossPresenter bossView)
