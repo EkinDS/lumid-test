@@ -24,7 +24,7 @@ namespace _Game.Features.HumansState.Scripts.Portal
         {
             _freeSlot = false;
 
-            Observable.Timer(TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(1))
+            Observable.Timer(TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(2))
                 .Where(_ => humanStateController.FreeSlotIn<WaitingState>())
                 .Subscribe(_ => MoveToWaiting(humanView))
                 .AddTo(_disposable);

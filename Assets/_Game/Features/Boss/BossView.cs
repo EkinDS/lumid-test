@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using UnityEngine;
 
@@ -6,10 +7,10 @@ namespace _Game.Features.Bosses
     public class BossView : MonoBehaviour
     {
         [SerializeField] private HealthBar _healthBar;
-        [SerializeField] private SpriteRenderer _spriteRenderer;
+        [SerializeField] private SpriteRenderer _mainSpriteRenderer;
+        [SerializeField] private SpriteRenderer _clubSpriteRenderer;
 
         private Vector2 _originalPosition;
-        private Sequence _takeDamageMovementSequence;
         private Sequence _takeDamageColorSequence;
         private Sequence _attackMovementSequence;
 
@@ -18,48 +19,45 @@ namespace _Game.Features.Bosses
             _originalPosition = transform.position;
         }
 
-        public void SetHealthBar(double currentHp, int maxHp)
+        public void SetHealthBar(int currentHp, int maxHp)
         {
-            _healthBar.SetFillAmount((float)currentHp, maxHp);
+            _healthBar.SetFillAmount(currentHp, maxHp);
         }
 
         public void PlayAttackAnimation()
         {
-            KillSequences();
-            ResetVisual();
-
+            transform.position = _originalPosition;
+            _attackMovementSequence.Kill();
             _attackMovementSequence = DOTween.Sequence();
-            _attackMovementSequence.Append(transform.DOLocalMoveY(_originalPosition.y - 0.2f, 0.05f));
-            _attackMovementSequence.Append(transform.DOLocalMoveY(_originalPosition.y, 0.05f));
+            _attackMovementSequence.Append(transform.DOMoveY(_originalPosition.y - 0.2f, 0.05f));
+            _attackMovementSequence.Append(transform.DOMoveY(_originalPosition.y, 0.05f));
         }
 
         public void PlayHitAnimation()
         {
-            KillSequences();
-            ResetVisual();
-
+            _mainSpriteRenderer.color = Color.white;
+            _takeDamageColorSequence.Kill();
             _takeDamageColorSequence = DOTween.Sequence();
-            _takeDamageColorSequence.Append(_spriteRenderer.DOColor(Color.red, 0.05f));
-            _takeDamageColorSequence.Append(_spriteRenderer.DOColor(Color.white, 0.05f));
-
-            _takeDamageMovementSequence = DOTween.Sequence();
-            _takeDamageMovementSequence.Append(transform.DOLocalMoveY(_originalPosition.y + 0.2f, 0.05f));
-            _takeDamageMovementSequence.Append(transform.DOLocalMoveY(_originalPosition.y, 0.05f));
+            _takeDamageColorSequence.Append(_mainSpriteRenderer.DOColor(Color.red, 0.05f));
+            _takeDamageColorSequence.Append(_mainSpriteRenderer.DOColor(Color.white, 0.05f));
         }
-
-        private void ResetVisual()
+        
+        public void PerformDeathAnimation(Action deathAction)
         {
-            transform.position = _originalPosition;
-            _spriteRenderer.color = Color.white;
+            transform.DORotate(new Vector3(0F, 0F, -90F), 0.3F);
+            _clubSpriteRenderer.DOFade(0F, 0.5F);
+            _mainSpriteRenderer.DOFade(0F, 1F).OnComplete((() =>
+            {
+                deathAction?.Invoke();
+            }));
         }
         
         private void KillSequences()
         {
             _attackMovementSequence?.Kill();
-            _takeDamageMovementSequence?.Kill();
             _takeDamageColorSequence?.Kill();
         }
-        
+
         private void OnDestroy()
         {
             KillSequences();

@@ -28,7 +28,7 @@ namespace _Game.Features.HumansState.Scripts.Waiting
         private void OnReachedWaitingSlot(HumanPresenter humanView)
         {
             _disposables.Add(humanView.GetInstanceID(), new CompositeDisposable());
-            Observable.Timer(TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(0.5f))
+            Observable.Timer(TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(2f))
                 .Where(_ => humanStateController.FreeSlotIn<TrainingState>())
                 .Subscribe(_ => FreeGridSlotAndMoveHumanToCombatPreparation(humanView))
                 .AddTo(_disposables[humanView.GetInstanceID()]);

@@ -29,13 +29,13 @@ namespace _Game.Features.HumansState.Scripts.Training
 
         private void PrepareForCombatCurrentHuman(HumanPresenter humanView)
         {
-            Observable.Timer(TimeSpan.FromMilliseconds(1000))
+            Observable.Timer(TimeSpan.FromMilliseconds(500))
                 .Subscribe(_ => OnFinished(humanView));
         }
 
         private void OnFinished(HumanPresenter humanView)
         {
-            humanView.Train();
+            humanView.Train(humanStateController.trainingData);
             _isFree = true;
             humanStateController.TransitionTo<CombatState>(humanView);
         }

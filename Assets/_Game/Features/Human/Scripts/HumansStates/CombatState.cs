@@ -36,7 +36,7 @@ namespace _Game.Features.HumansState.Scripts.Combat
 
         private void SpawnBoss(List<HumanPresenter> attackers)
         {
-            var clone = GameObject.Instantiate(_bossPrefab, new Vector3(0, 3.93f, 0), Quaternion.identity);
+            var clone = GameObject.Instantiate(_bossPrefab, new Vector3(0, 2.93f, 0), Quaternion.identity);
             clone.Initialize(100, 1.05f, 1, 5);
             _currentBossView = clone;
             attackers.ForEach(StartToCombat);

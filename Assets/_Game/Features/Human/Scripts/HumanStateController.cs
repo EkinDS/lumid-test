@@ -19,11 +19,16 @@ namespace _Game.Features.HumansState.Scripts.Core
         public List<HumanPresenter> Humans { get; } = new();
 
         private List<HumanState> _states;
-        
-        
+
+        public TrainingData trainingData = new TrainingData();
 
         private void Start()
         {
+            trainingData.trainingAttackingInterval = _data.humanAttackIntervalLevelData[0].attackInterval;
+            trainingData.trainingMaximumHealth = _data.humanMaximumHealthLevelData[0].maximumHealth;
+            trainingData.trainingDamage = _data.humanDamageLevelData[0].damage;
+            trainingData.trainingMovementSpeed = _data.humanMovementSpeedLevelData[0].movementSpeed;
+            
             _states = new List<HumanState>()
             {
                 new SpawnState(this, _humanPrefab),
@@ -75,6 +80,14 @@ namespace _Game.Features.HumansState.Scripts.Core
         public void UnregisterHuman(HumanPresenter human)
         {
             Humans.Remove(human);
+        }
+
+        public class TrainingData
+        {
+            public int trainingMaximumHealth;
+            public float trainingMovementSpeed;
+            public float trainingAttackingInterval;
+            public int trainingDamage;
         }
     }
 }

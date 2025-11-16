@@ -1,4 +1,5 @@
 using System;
+using _Game.Features.HumansState.Scripts.Core;
 
 namespace _Game.Features.Humans
 {
@@ -17,10 +18,6 @@ namespace _Game.Features.Humans
         public float AttackInterval;
         public float MovementSpeed;
 
-        public int MaximumHealthToBeAfterTraining;
-        public int DamageToBeAfterTraining;
-        public float AttackIntervalToBeAfterTraining;
-        public float MovementSpeedToBeAfterTraining;
 
         public bool IsDead => Health <= 0;
 
@@ -31,20 +28,15 @@ namespace _Game.Features.Humans
             AttackInterval = humanData.humanAttackIntervalLevelData[0].attackInterval;
             Damage = humanData.humanDamageLevelData[0].damage;
             Health = MaximumHealth;
-
-            MaximumHealthToBeAfterTraining = MaximumHealth;
-            DamageToBeAfterTraining = Damage;
-            AttackIntervalToBeAfterTraining = AttackInterval;
-            MovementSpeedToBeAfterTraining = MovementSpeed;
         }
 
-        public void Train()
+        public void Train(HumanStateController.TrainingData  trainingData)
         {
-            MaximumHealth = MaximumHealthToBeAfterTraining;
-            Health = MaximumHealthToBeAfterTraining;
-            Damage = DamageToBeAfterTraining;
-            AttackInterval = AttackIntervalToBeAfterTraining;
-            MovementSpeed = MovementSpeedToBeAfterTraining;
+            MaximumHealth = trainingData.trainingMaximumHealth;
+            Health = MaximumHealth;
+            Damage = trainingData.trainingDamage;
+            AttackInterval = trainingData.trainingAttackingInterval;
+            MovementSpeed = trainingData.trainingMovementSpeed;
 
             OnMaximumHealthChanged?.Invoke(MaximumHealth);
             OnDamageChanged?.Invoke(Damage);
@@ -63,27 +55,6 @@ namespace _Game.Features.Humans
             {
                 OnDied?.Invoke();
             }
-        }
-
-
-        public void SetMaxHealthToBeAfterTraining(int value)
-        {
-            MaximumHealthToBeAfterTraining = value;
-        }
-
-        public void SetDamageToBeAfterTraining(int value)
-        {
-            DamageToBeAfterTraining = value;
-        }
-
-        public void SetMovementSpeedToBeAfterTraining(float value)
-        {
-            MovementSpeedToBeAfterTraining = value;
-        }
-
-        public void SetAttackIntervalToBeAfterTraining(float value)
-        {
-            AttackIntervalToBeAfterTraining = value;
         }
     }
 }

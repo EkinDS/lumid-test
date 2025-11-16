@@ -3,7 +3,9 @@ using System.Collections;
 using _Game.Features.Bosses;
 using _Game.Features.HumansState.Scripts.Core;
 using _Game.Features.PlayerWallet;
+using DG.Tweening;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace _Game.Features.Humans
 {
@@ -26,10 +28,6 @@ namespace _Game.Features.Humans
         {
             _model = new HumanModel(humanStateController. GetHumanData());
 
-            _model.OnMaximumHealthChanged += HandleMaximumHealthChanged;
-            _model.OnDamageChanged += HandleDamageChanged;
-            _model.OnMovementSpeedChanged += HandleMovementSpeedChanged;
-            _model.OnAttackIntervalChanged += HandleAttackIntervalChanged;
             _model.OnDied += HandleDied;
         }
         
@@ -38,9 +36,9 @@ namespace _Game.Features.Humans
             _view.MoveTo(targetPosition, _model.MovementSpeed, () => onReached?.Invoke(this));
         }
 
-        public void Train()
+        public void Train(HumanStateController.TrainingData trainingData)
         {
-            _model.Train();
+            _model.Train(trainingData);
             _view.ArrangeHealthBar(_model.Health, _model.MaximumHealth);
         }
 
@@ -59,34 +57,13 @@ namespace _Game.Features.Humans
         {
             _model.TakeDamage(damage);
             _view.PlayHitAnimationDown();
+            _view.ArrangeHealthBar(_model.Health, _model.MaximumHealth);
         }
-        
-        private void HandleMaximumHealthChanged(int health)
-        {
-            _model.MaximumHealthToBeAfterTraining = health;
-            //_view.ArrangeHealthBar(current, max);
-        }
-        
-        private void HandleDamageChanged(int damage)
-        {
-            _model.DamageToBeAfterTraining = damage;
-        }
-        
-        private void HandleMovementSpeedChanged(float movementSpeed)
-        {
-            _model.MovementSpeedToBeAfterTraining = movementSpeed;
 
-        }
-        
-        private void HandleAttackIntervalChanged(float attackInterval)
-        {
-            _model.AttackIntervalToBeAfterTraining = attackInterval;
-
-        }
         
         private IEnumerator AttackLoop()
         {
-            var wait = new WaitForSeconds(1f);
+            var wait = new WaitForSeconds(_model.AttackInterval + Random.Range(-0.1F, 0F));
 
             while (_boss != null && _boss.IsAlive && !_model.IsDead)
             {
@@ -98,30 +75,8 @@ namespace _Game.Features.Humans
             }
         }
         
-        ////
-        
         public event Action<HumanPresenter> OnHumanDied;
 
-
-        public void SetMaxHealthToBeAfterTraining(int newMax)
-        {
-            _model.SetMaxHealthToBeAfterTraining(newMax);
-        }
-
-        public void SetMoveSpeedToBeAfterTraining(float newSpeed)
-        {
-            _model.SetMovementSpeedToBeAfterTraining(newSpeed);
-        }
-
-        public void SetAttackIntervalToBeAfterTraining(float newInterval)
-        {
-            _model.SetAttackIntervalToBeAfterTraining(newInterval);
-        }
-
-        public void SetDamageToBeAfterTraining(int newDamage)
-        {
-            _model.SetDamageToBeAfterTraining(newDamage);
-        }
 
         private void HandleDied()
         {
@@ -129,7 +84,8 @@ namespace _Game.Features.Humans
                 StopCoroutine(_attackRoutine);
 
             OnHumanDied?.Invoke(this);
-            Destroy(gameObject);
+            
+            _view.PerformDeathAnimation(() => Destroy(gameObject));
         }
     }
 }

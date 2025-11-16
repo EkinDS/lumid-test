@@ -4,13 +4,19 @@ using UnityEngine.UI;
 public class HealthBar : MonoBehaviour
 {
     [SerializeField] private Image fillerSprite;
-    
 
-    public void SetFillAmount(float currentHealth, float maximumHealth)
+
+    public void SetFillAmount(int currentHealth, int maximumHealth)
     {
-        float percentage = currentHealth / maximumHealth;
-        print(currentHealth + " / " + maximumHealth);
+        float percentage = (float)currentHealth / maximumHealth;
         fillerSprite.fillAmount = percentage;
-        gameObject.SetActive(true);
+
+        SetVisibility(currentHealth > 0);
+    }
+
+
+    private void SetVisibility(bool isVisible)
+    {
+        gameObject.SetActive(isVisible);
     }
 }

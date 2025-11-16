@@ -38,7 +38,7 @@ namespace _Game.Features.HumansState.Scripts.Spawn
             humanStateController.TransitionTo<PortalState>(human);
 
          
-            Observable.Interval(TimeSpan.FromMilliseconds(1000))
+            Observable.Interval(TimeSpan.FromMilliseconds(1500))
                 .Where(_ => humanStateController.FreeSlotIn<PortalState>())
                 .Subscribe(_ => SpawnHuman());
         }

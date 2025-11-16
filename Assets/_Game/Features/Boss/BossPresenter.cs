@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using _Game.Features.Humans;
+using DG.Tweening;
 using UnityEngine;
 
 namespace _Game.Features.Bosses
@@ -8,7 +9,7 @@ namespace _Game.Features.Bosses
     [RequireComponent(typeof(BossView))]
     public class BossPresenter : MonoBehaviour
     {
-        [SerializeField] private double _startingHp;
+        [SerializeField] private int _startingHp;
         [SerializeField] private int _damage;
         [SerializeField] private float _attackInterval;
         [SerializeField] private int _targetsPerAttack;
@@ -46,7 +47,7 @@ namespace _Game.Features.Bosses
             _lastAttackTime = Time.time;
         }
 
-        public void Initialize(double hp, float attackInterval, int targetsPerAttack, double damage)
+        public void Initialize(int hp, float attackInterval, int targetsPerAttack, double damage)
         {
             _attackInterval = attackInterval;
             _targetsPerAttack = targetsPerAttack;
@@ -58,7 +59,7 @@ namespace _Game.Features.Bosses
             _view.SetHealthBar(_model.CurrentHp, _model.MaxHp);
         }
 
-        public void TakeDamage(double damage)
+        public void TakeDamage(int damage)
         {
             _model.TakeDamage(damage);
             _view.PlayHitAnimation();
@@ -77,7 +78,7 @@ namespace _Game.Features.Bosses
             bossDefeatedCallback = callback;
         }
 
-        private void HandleHealthChanged(double current, int max)
+        private void HandleHealthChanged(int current, int max)
         {
             _view.SetHealthBar(current, max);
         }
@@ -85,7 +86,8 @@ namespace _Game.Features.Bosses
         private void HandleDied()
         {
             bossDefeatedCallback?.Invoke(new List<HumanPresenter>(_attackers));
-            Destroy(gameObject);
+           
+            _view.PerformDeathAnimation((() => Destroy(gameObject)));
         }
 
         private void OnDestroy()

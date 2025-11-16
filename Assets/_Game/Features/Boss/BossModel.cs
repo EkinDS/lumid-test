@@ -4,10 +4,10 @@ namespace _Game.Features.Bosses
 {
     public class BossModel
     {
-        public event Action<double, int> OnHealthChanged;
+        public event Action<int, int> OnHealthChanged;
         public event Action OnDied;
 
-        public double CurrentHp { get; private set; }
+        public int CurrentHp { get; private set; }
 
         public int MaxHp { get; private set; }
 
@@ -15,16 +15,16 @@ namespace _Game.Features.Bosses
 
         public bool IsAlive => CurrentHp > 0;
 
-        public BossModel(double hp, int damage)
+        public BossModel(int hp, int damage)
         {
             CurrentHp = hp;
-            MaxHp = (int)hp;
+            MaxHp = hp;
             Damage = damage;
 
             OnHealthChanged?.Invoke(CurrentHp, MaxHp);
         }
 
-        public void TakeDamage(double amount)
+        public void TakeDamage(int amount)
         {
             if (!IsAlive) return;
 
