@@ -6,10 +6,6 @@ namespace _Game.Features.Humans
     [Serializable]
     public class HumanModel
     {
-        public event Action<int> OnMaximumHealthChanged;
-        public event Action<int> OnDamageChanged;
-        public event Action<float> OnMovementSpeedChanged;
-        public event Action<float> OnAttackIntervalChanged;
         public event Action OnDied;
 
         public int Health;
@@ -37,11 +33,6 @@ namespace _Game.Features.Humans
             Damage = trainingData.trainingDamage;
             AttackInterval = trainingData.trainingAttackingInterval;
             MovementSpeed = trainingData.trainingMovementSpeed;
-
-            OnMaximumHealthChanged?.Invoke(MaximumHealth);
-            OnDamageChanged?.Invoke(Damage);
-            OnAttackIntervalChanged?.Invoke(AttackInterval);
-            OnMovementSpeedChanged?.Invoke(MovementSpeed);
         }
 
         public void TakeDamage(int amount)

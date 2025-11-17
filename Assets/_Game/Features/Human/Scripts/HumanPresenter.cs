@@ -26,11 +26,11 @@ namespace _Game.Features.Humans
 
         public void Initialize(HumanStateController humanStateController)
         {
-            _model = new HumanModel(humanStateController. GetHumanData());
+            _model = new HumanModel(humanStateController.GetHumanData());
 
             _model.OnDied += HandleDied;
         }
-        
+
         public void MoveTo(Vector3 targetPosition, System.Action<HumanPresenter> onReached)
         {
             _view.MoveTo(targetPosition, _model.MovementSpeed, () => onReached?.Invoke(this));
@@ -60,21 +60,27 @@ namespace _Game.Features.Humans
             _view.ArrangeHealthBar(_model.Health, _model.MaximumHealth);
         }
 
-        
+
         private IEnumerator AttackLoop()
         {
             var wait = new WaitForSeconds(_model.AttackInterval + Random.Range(-0.1F, 0F));
 
             while (_boss != null && _boss.IsAlive && !_model.IsDead)
             {
-                Wallet.AddCoins(_model.Damage);
+                int reward = _model.Damage;
+
+                Vector3 spawnPos = transform.position;
+
+                Wallet.AddCoins(reward, spawnPos);
+
                 _boss.TakeDamage(_model.Damage);
                 _view.PlayAttackAnimationUp();
 
                 yield return wait;
             }
         }
-        
+
+
         public event Action<HumanPresenter> OnHumanDied;
 
 
@@ -84,7 +90,7 @@ namespace _Game.Features.Humans
                 StopCoroutine(_attackRoutine);
 
             OnHumanDied?.Invoke(this);
-            
+
             _view.PerformDeathAnimation(() => Destroy(gameObject));
         }
     }

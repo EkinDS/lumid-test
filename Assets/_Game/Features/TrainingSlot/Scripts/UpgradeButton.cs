@@ -12,6 +12,7 @@ public class UpgradeButton : MonoBehaviour
     [SerializeField] private TextMeshProUGUI valueText;
     [SerializeField] private Image moneyImage;
 
+    
     public void SetName(string statName)
     {
         nameText.text = statName;
