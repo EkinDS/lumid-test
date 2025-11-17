@@ -1,5 +1,6 @@
-using System;
 using System.Collections;
+using System.Collections.Generic;
+using _Game.Infrastructure;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -17,46 +18,52 @@ namespace _Game.Features.PlayerWallet
         [SerializeField] int _coinsPerBurst = 3;
         [SerializeField] float _duration = 0.6f;
         [SerializeField] float _spawnDelay = 0.05f;
+        [SerializeField] GameEvents _gameEvents;
+
+        EventBus _bus;
 
         int _displayedCoins;
         int _targetCoins;
         int _activeBursts;
 
+        private List<Ease> _eases = new List<Ease>() { Ease.OutCubic, Ease.InCubic, Ease.Linear };
+
         void Awake()
         {
+            _bus = _gameEvents.Bus;
             if (_coinTarget == null) _coinTarget = transform as RectTransform;
-        }
 
-
-        void OnEnable()
-        {
-            Wallet.OnCoinsChanged += OnChanged;
-            Wallet.OnCoinsGained += OnGained;
             _targetCoins = _displayedCoins = Wallet.GetCoins();
             _coinsText.text = _displayedCoins.ToString();
         }
 
+        void OnEnable()
+        {
+            _bus.Subscribe<CoinsChangedEvent>(OnCoinsChanged);
+        }
+
         void OnDisable()
         {
-            Wallet.OnCoinsChanged -= OnChanged;
-            Wallet.OnCoinsGained -= OnGained;
+            _bus.Unsubscribe<CoinsChangedEvent>(OnCoinsChanged);
         }
 
-        void OnChanged(int v)
+        void OnCoinsChanged(CoinsChangedEvent e)
         {
-            bool gain = v > _targetCoins;
-            _targetCoins = v;
+            _targetCoins = e.NewTotal;
 
-            if (!gain)
+            if (e.Delta > 0)
             {
-                _displayedCoins = v;
-                _coinsText.text = v.ToString();
-            }
-        }
+                int previousTotal = e.NewTotal - e.Delta;
+                _displayedCoins = previousTotal;
+                _coinsText.text = _displayedCoins.ToString();
 
-        void OnGained(int amount, Vector3 pos)
-        {
-            StartCoroutine(SpawnCoins(pos, _coinsPerBurst, amount));
+                StartCoroutine(SpawnCoins(e.WorldPosition, _coinsPerBurst, e.Delta));
+            }
+            else
+            {
+                _displayedCoins = e.NewTotal;
+                _coinsText.text = e.NewTotal.ToString();
+            }
         }
 
         IEnumerator SpawnCoins(Vector3 pos, int count, int total)
@@ -84,16 +91,13 @@ namespace _Game.Features.PlayerWallet
                 control.y += Random.Range(60f, 120f);
                 control.x += Random.Range(-40f, 40f);
 
-                DOTween.To(() => 0f, t =>
-                    {
-                        coin.anchoredPosition = Bezier(start, control, target, t);
-                    }, 1f, _duration)
-                    .SetEase(Ease.OutCubic)
-                    .OnComplete(() =>
-                    {
-                        Destroy(coin.gameObject);
-                        Arrive(gain);
-                    });
+                
+                coin.transform.DOLocalMoveX(target.x, _duration).SetEase(_eases[Random.Range(0, _eases.Count)]);
+                coin.transform.DOLocalMoveY(target.y, _duration).SetEase(_eases[Random.Range(0, _eases.Count)]).OnComplete((() =>
+                {
+                    Destroy(coin.gameObject);
+                    Arrive(gain);
+                }));
 
                 yield return new WaitForSeconds(_spawnDelay);
             }
@@ -117,7 +121,9 @@ namespace _Game.Features.PlayerWallet
         void Arrive(int gain)
         {
             _displayedCoins += gain;
-            if (_displayedCoins > _targetCoins) _displayedCoins = _targetCoins;
+            if (_displayedCoins > _targetCoins)
+                _displayedCoins = _targetCoins;
+
             _coinsText.text = _displayedCoins.ToString();
 
             _coinTarget.DOKill();

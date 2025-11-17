@@ -3,7 +3,7 @@ using System.Collections;
 using _Game.Features.Bosses;
 using _Game.Features.HumansState.Scripts.Core;
 using _Game.Features.PlayerWallet;
-using DG.Tweening;
+using _Game.Infrastructure;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -18,6 +18,7 @@ namespace _Game.Features.Humans
         private Coroutine _attackRoutine;
 
         public bool IsDead => _model.IsDead;
+        EventBus _bus;
 
         private void Awake()
         {
@@ -27,6 +28,9 @@ namespace _Game.Features.Humans
         public void Initialize(HumanStateController humanStateController)
         {
             _model = new HumanModel(humanStateController.GetHumanData());
+            _bus = humanStateController.EventBus;
+            Wallet.Initialize(_bus);
+            name = "Human " + Time.time;
 
             _model.OnDied += HandleDied;
         }
@@ -44,10 +48,10 @@ namespace _Game.Features.Humans
 
         public void StartAttacking(BossPresenter bossView)
         {
-            _boss = bossView;
-
             if (_attackRoutine != null)
                 StopCoroutine(_attackRoutine);
+
+            _boss = bossView;
 
             _view.SetFightingPosition();
             _attackRoutine = StartCoroutine(AttackLoop());
@@ -63,16 +67,12 @@ namespace _Game.Features.Humans
 
         private IEnumerator AttackLoop()
         {
-            var wait = new WaitForSeconds(_model.AttackInterval + Random.Range(-0.1F, 0F));
-
+            var wait = new WaitForSeconds(_model.AttackInterval);
+            
+            yield return wait;
             while (_boss != null && _boss.IsAlive && !_model.IsDead)
             {
-                int reward = _model.Damage;
-
-                Vector3 spawnPos = transform.position;
-
-                Wallet.AddCoins(reward, spawnPos);
-
+                RewardPlayer(_model.Damage, transform.position);
                 _boss.TakeDamage(_model.Damage);
                 _view.PlayAttackAnimationUp();
 
@@ -92,6 +92,12 @@ namespace _Game.Features.Humans
             OnHumanDied?.Invoke(this);
 
             _view.PerformDeathAnimation(() => Destroy(gameObject));
+        }
+
+
+        void RewardPlayer(int amount, Vector3 worldPos)
+        {
+            Wallet.AddCoins(amount, worldPos); 
         }
     }
 }

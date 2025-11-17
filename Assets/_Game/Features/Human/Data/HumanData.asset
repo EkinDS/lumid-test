@@ -15,23 +15,23 @@ MonoBehaviour:
   humanMaximumHealthLevelData:
   - cost: 0
     maximumHealth: 10
-  - cost: 500
+  - cost: 100
     maximumHealth: 12
-  - cost: 600
+  - cost: 105
     maximumHealth: 14
-  - cost: 700
+  - cost: 110
     maximumHealth: 16
-  - cost: 800
+  - cost: 115
     maximumHealth: 18
-  - cost: 900
+  - cost: 120
     maximumHealth: 20
-  - cost: 1000
+  - cost: 125
     maximumHealth: 22
-  - cost: 1100
+  - cost: 130
     maximumHealth: 24
-  - cost: 1200
+  - cost: 135
     maximumHealth: 26
-  - cost: 1300
+  - cost: 140
     maximumHealth: 28
   humanMovementSpeedLevelData:
   - cost: 0
@@ -57,42 +57,42 @@ MonoBehaviour:
   humanAttackIntervalLevelData:
   - cost: 0
     attackInterval: 1
-  - cost: 400
+  - cost: 100
     attackInterval: 0.95
-  - cost: 800
+  - cost: 110
     attackInterval: 0.9
-  - cost: 1200
+  - cost: 120
     attackInterval: 0.85
-  - cost: 1600
+  - cost: 130
     attackInterval: 0.8
-  - cost: 2000
+  - cost: 140
+    attackInterval: 0.85
+  - cost: 150
+    attackInterval: 0.8
+  - cost: 160
     attackInterval: 0.75
-  - cost: 2400
+  - cost: 170
     attackInterval: 0.7
-  - cost: 2800
+  - cost: 180
     attackInterval: 0.65
-  - cost: 3200
-    attackInterval: 0.6
-  - cost: 3600
-    attackInterval: 0.55
   humanDamageLevelData:
   - cost: 0
     damage: 10
-  - cost: 100
+  - cost: 50
     damage: 11
-  - cost: 400
+  - cost: 100
     damage: 12
-  - cost: 700
+  - cost: 150
     damage: 13
-  - cost: 1000
+  - cost: 200
     damage: 14
-  - cost: 1300
+  - cost: 250
     damage: 15
-  - cost: 1700
+  - cost: 300
     damage: 16
-  - cost: 2000
+  - cost: 350
     damage: 17
-  - cost: 2300
+  - cost: 400
     damage: 18
-  - cost: 2700
+  - cost: 450
     damage: 19

@@ -6,6 +6,7 @@ using _Game.Features.HumansState.Scripts.Portal;
 using _Game.Features.HumansState.Scripts.Spawn;
 using _Game.Features.HumansState.Scripts.Training;
 using _Game.Features.HumansState.Scripts.Waiting;
+using _Game.Infrastructure;
 using UnityEngine;
 
 namespace _Game.Features.HumansState.Scripts.Core
@@ -15,6 +16,7 @@ namespace _Game.Features.HumansState.Scripts.Core
         [SerializeField] private HumanPresenter _humanPrefab;
         [SerializeField] private BossPresenter _bossPrefab;
         [SerializeField] private HumanData _data;
+        [SerializeField] private GameEvents _eventBus;
 
         public List<HumanPresenter> Humans { get; } = new();
 
@@ -22,6 +24,9 @@ namespace _Game.Features.HumansState.Scripts.Core
 
         public TrainingData trainingData = new TrainingData();
 
+        
+        public EventBus EventBus => _eventBus.Bus;
+        
         private void Start()
         {
             trainingData.trainingAttackingInterval = _data.humanAttackIntervalLevelData[0].attackInterval;

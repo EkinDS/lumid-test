@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using _Game;
 using _Game.Features.HumansState.Scripts.Core;
 using _Game.Features.PlayerWallet;
+using _Game.Infrastructure;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,13 +11,17 @@ public class TrainingSlotUI : MonoBehaviour
     [SerializeField] private GameObject upgradeButtonsContainer;
     [SerializeField] private HumanStateController _controller;
     [SerializeField] private List<UpgradeButton> _buttons;
+    [SerializeField] private GameEvents _gameEvents; 
 
     private bool upgradesAreShown;
-
     private readonly Dictionary<HumanStatType, int> _levels = new();
+    private EventBus _bus;
 
-    private void Awake()
+   
+    void Awake()
     {
+        _bus = _controller.EventBus;
+
         foreach (var btn in _buttons)
         {
             btn.SetName(btn.type.ToString());
@@ -25,33 +31,32 @@ public class TrainingSlotUI : MonoBehaviour
         }
     }
 
-    private void OnEnable()
+    void OnEnable()
     {
-        Wallet.OnCoinsChanged += HandleCoinsChanged;
+        _bus.Subscribe<CoinsChangedEvent>(HandleCoinsChanged);
     }
 
-    private void OnDisable()
+    void OnDisable()
     {
-        Wallet.OnCoinsChanged -= HandleCoinsChanged;
+        _bus.Unsubscribe<CoinsChangedEvent>(HandleCoinsChanged);
     }
 
     public void ArrowButtonClicked()
     {
         if (upgradesAreShown)
         {
-            upgradeButtonsContainer.gameObject.SetActive(false);
+            upgradeButtonsContainer.SetActive(false);
         }
         else
         {
-            upgradeButtonsContainer.gameObject.SetActive(true);
-
+            upgradeButtonsContainer.SetActive(true);
             RefreshAll();
         }
 
         upgradesAreShown = !upgradesAreShown;
     }
 
-    private void RefreshAll()
+    void RefreshAll()
     {
         foreach (var btn in _buttons)
             Refresh(btn);
@@ -60,7 +65,6 @@ public class TrainingSlotUI : MonoBehaviour
     private void Refresh(UpgradeButton upgradeButton)
     {
         int level = _levels[upgradeButton.type];
-
         HumanData data = _controller.GetHumanData();
 
         switch (upgradeButton.type)
@@ -75,6 +79,7 @@ public class TrainingSlotUI : MonoBehaviour
                         ? data.humanMaximumHealthLevelData[level + 1].cost
                         : -1);
                 break;
+
             case HumanStatType.MoveSpeed:
                 RefreshGeneric(upgradeButton, level, data.humanMovementSpeedLevelData.Count - 1,
                     data.humanMovementSpeedLevelData[level].movementSpeed.ToString("0.0"),
@@ -85,6 +90,7 @@ public class TrainingSlotUI : MonoBehaviour
                         ? data.humanMovementSpeedLevelData[level + 1].cost
                         : -1);
                 break;
+
             case HumanStatType.AttackInterval:
                 RefreshGeneric(upgradeButton, level, data.humanAttackIntervalLevelData.Count - 1,
                     data.humanAttackIntervalLevelData[level].attackInterval.ToString("0.00"),
@@ -95,11 +101,16 @@ public class TrainingSlotUI : MonoBehaviour
                         ? data.humanAttackIntervalLevelData[level + 1].cost
                         : -1);
                 break;
+
             case HumanStatType.Damage:
                 RefreshGeneric(upgradeButton, level, data.humanDamageLevelData.Count - 1,
                     data.humanDamageLevelData[level].damage,
-                    level + 1 < data.humanDamageLevelData.Count ? data.humanDamageLevelData[level + 1].damage : -1,
-                    level + 1 < data.humanDamageLevelData.Count ? data.humanDamageLevelData[level + 1].cost : -1);
+                    level + 1 < data.humanDamageLevelData.Count
+                        ? data.humanDamageLevelData[level + 1].damage
+                        : -1,
+                    level + 1 < data.humanDamageLevelData.Count
+                        ? data.humanDamageLevelData[level + 1].cost
+                        : -1);
                 break;
         }
     }
@@ -119,22 +130,21 @@ public class TrainingSlotUI : MonoBehaviour
     private void OnUpgrade(HumanStatType type)
     {
         var level = _levels[type];
-
         HumanData data = _controller.GetHumanData();
 
         int cost = type switch
         {
-            HumanStatType.Health => NextCost(data.humanMaximumHealthLevelData, level),
-            HumanStatType.MoveSpeed => NextCost(data.humanMovementSpeedLevelData, level),
+            HumanStatType.Health         => NextCost(data.humanMaximumHealthLevelData, level),
+            HumanStatType.MoveSpeed      => NextCost(data.humanMovementSpeedLevelData, level),
             HumanStatType.AttackInterval => NextCost(data.humanAttackIntervalLevelData, level),
-            HumanStatType.Damage => NextCost(data.humanDamageLevelData, level),
+            HumanStatType.Damage         => NextCost(data.humanDamageLevelData, level),
             _ => -1
         };
 
         if (cost < 0 || Wallet.GetCoins() < cost)
             return;
 
-        Wallet.AddCoins(-cost);
+        Wallet.AddCoins(-cost);   // Wallet will internally publish CoinsChangedEvent via the bus
         _levels[type]++;
 
         ApplyStat(type);
@@ -168,13 +178,14 @@ public class TrainingSlotUI : MonoBehaviour
                     break;
 
                 case HumanStatType.Damage:
-                    _controller.trainingData.trainingDamage = data.humanDamageLevelData[_levels[type]].damage;
+                    _controller.trainingData.trainingDamage =
+                        data.humanDamageLevelData[_levels[type]].damage;
                     break;
             }
         }
     }
 
-    private void HandleCoinsChanged(int newCoins)
+    void HandleCoinsChanged(CoinsChangedEvent e)
     {
         if (upgradesAreShown)
             RefreshAll();

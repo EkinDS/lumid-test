@@ -1,37 +1,27 @@
-using System;
 using UnityEngine;
+using _Game.Infrastructure;
 
 namespace _Game.Features.PlayerWallet
 {
     public static class Wallet
     {
-        public static event Action<int> OnCoinsChanged;
+        static EventBus _bus;
+        static int _coins;
 
-        public static event Action<int, Vector3> OnCoinsGained;
-
-        private static int _coins;
-
-        static Wallet()
+        public static void Initialize(EventBus bus)
         {
-            _coins = 0;
-        }
+            _bus = bus;
+        } 
 
-        public static int GetCoins()
-        {
-            return _coins;
-        }
+        public static int GetCoins() => _coins;
 
-        public static void AddCoins(int amount)
-        {
-            _coins += amount;
-            OnCoinsChanged?.Invoke(_coins);
-        }
+        public static void AddCoins(int amount) => AddCoins(amount, Vector3.zero);
 
         public static void AddCoins(int amount, Vector3 worldPosition)
         {
             _coins += amount;
-            OnCoinsChanged?.Invoke(_coins);
-            OnCoinsGained?.Invoke(amount, worldPosition);
+            
+            _bus?.Publish(new CoinsChangedEvent(amount, _coins, worldPosition));
         }
     }
 }

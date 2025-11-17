@@ -11,6 +11,7 @@ namespace _Game.Features.HumansState.Scripts.Combat
         private BossPresenter _currentBossView;
 
         private readonly BossPresenter _bossPrefab;
+        private int _lastBossHp = 100;
 
         public override bool HasFreeSlot() => true;
 
@@ -37,7 +38,8 @@ namespace _Game.Features.HumansState.Scripts.Combat
         private void SpawnBoss(List<HumanPresenter> attackers)
         {
             var clone = GameObject.Instantiate(_bossPrefab, new Vector3(0, 2.93f, 0), Quaternion.identity);
-            clone.Initialize(100, 1.05f, 1, 5);
+            clone.Initialize(_lastBossHp, 1.05f, 1, 5);
+            _lastBossHp *= 2;
             _currentBossView = clone;
             attackers.ForEach(StartToCombat);
             _currentBossView.SetDeathCallback(HandleBossDefeated);
