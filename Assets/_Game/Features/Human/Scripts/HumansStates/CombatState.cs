@@ -15,8 +15,7 @@ namespace _Game.Features.HumansState.Scripts.Combat
 
         public override bool HasFreeSlot() => true;
 
-        public CombatState(HumanStateController humanStateController, BossPresenter bossPrefab) : base(
-            humanStateController)
+        public CombatState(GameManager gameManager, BossPresenter bossPrefab) : base(gameManager)
         {
             _bossPrefab = bossPrefab;
 

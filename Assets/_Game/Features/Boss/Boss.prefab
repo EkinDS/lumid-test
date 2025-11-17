@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7247699718143425989}
   - component: {fileID: 2332424861576546592}
   m_Layer: 0
-  m_Name: BossSprite
+  m_Name: MainSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -96,7 +96,7 @@ GameObject:
   - component: {fileID: 6677642391484614792}
   - component: {fileID: 287865018461223789}
   m_Layer: 0
-  m_Name: Weapon
+  m_Name: ClubSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

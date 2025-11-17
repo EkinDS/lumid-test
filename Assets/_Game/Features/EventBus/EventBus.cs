@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace _Game.Infrastructure
 {
-    public interface IGameEvent { }
+    public interface IGameEvent
+    {
+    }
 
     public class EventBus
     {
@@ -13,36 +14,51 @@ namespace _Game.Infrastructure
         public void Subscribe<T>(Action<T> handler) where T : IGameEvent
         {
             var type = typeof(T);
+
             if (!_handlers.TryGetValue(type, out var list))
             {
                 list = new List<Delegate>();
                 _handlers[type] = list;
             }
+
             if (!list.Contains(handler))
+            {
                 list.Add(handler);
+            }
         }
 
         public void Unsubscribe<T>(Action<T> handler) where T : IGameEvent
         {
             var type = typeof(T);
+            
             if (_handlers.TryGetValue(type, out var list))
             {
                 list.Remove(handler);
+                
                 if (list.Count == 0)
+                {
                     _handlers.Remove(type);
+                }
             }
         }
 
         public void Publish<T>(T evt) where T : IGameEvent
         {
             var type = typeof(T);
-            if (!_handlers.TryGetValue(type, out var list)) return;
+            
+            if (!_handlers.TryGetValue(type, out var list))
+            {
+                return;
+            }
 
             var snapshot = list.ToArray();
-            for (int i = 0; i < snapshot.Length; i++)
+            
+            foreach (var t in snapshot)
             {
-                if (snapshot[i] is Action<T> action)
+                if (t is Action<T> action)
+                {
                     action(evt);
+                }
             }
         }
     }

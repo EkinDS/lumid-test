@@ -56,25 +56,25 @@ MonoBehaviour:
     movementSpeed: 2.8
   humanAttackIntervalLevelData:
   - cost: 0
-    attackInterval: 1
-  - cost: 100
-    attackInterval: 0.95
-  - cost: 110
-    attackInterval: 0.9
-  - cost: 120
-    attackInterval: 0.85
-  - cost: 130
-    attackInterval: 0.8
-  - cost: 140
-    attackInterval: 0.85
-  - cost: 150
-    attackInterval: 0.8
-  - cost: 160
     attackInterval: 0.75
-  - cost: 170
-    attackInterval: 0.7
-  - cost: 180
+  - cost: 100
+    attackInterval: 0.73
+  - cost: 110
+    attackInterval: 0.71
+  - cost: 120
+    attackInterval: 0.69
+  - cost: 130
+    attackInterval: 0.67
+  - cost: 140
     attackInterval: 0.65
+  - cost: 150
+    attackInterval: 0.63
+  - cost: 160
+    attackInterval: 0.61
+  - cost: 170
+    attackInterval: 0.59
+  - cost: 180
+    attackInterval: 0.57
   humanDamageLevelData:
   - cost: 0
     damage: 10

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using _Game.Features.Bosses;
 using _Game.Features.Humans;
@@ -6,29 +7,40 @@ using _Game.Features.HumansState.Scripts.Portal;
 using _Game.Features.HumansState.Scripts.Spawn;
 using _Game.Features.HumansState.Scripts.Training;
 using _Game.Features.HumansState.Scripts.Waiting;
+using _Game.Features.PlayerWallet;
 using _Game.Infrastructure;
 using UnityEngine;
 
 namespace _Game.Features.HumansState.Scripts.Core
 {
-    public class HumanStateController : MonoBehaviour
+    public class GameManager : MonoBehaviour
     {
         [SerializeField] private HumanPresenter _humanPrefab;
         [SerializeField] private BossPresenter _bossPrefab;
         [SerializeField] private HumanData _data;
         [SerializeField] private GameEvents _eventBus;
+        [SerializeField] private TrainingSlot trainingSlot;
 
+        
         public List<HumanPresenter> Humans { get; } = new();
 
         private List<HumanState> _states;
 
         public TrainingData trainingData = new TrainingData();
-
         
         public EventBus EventBus => _eventBus.Bus;
-        
+
+        private void Awake()
+        {
+            print("awake gamemanager");
+            _eventBus.Initialize();
+            Wallet.Initialize(EventBus);
+            trainingSlot.Initialize();
+        }
+
         private void Start()
         {
+
             trainingData.trainingAttackingInterval = _data.humanAttackIntervalLevelData[0].attackInterval;
             trainingData.trainingMaximumHealth = _data.humanMaximumHealthLevelData[0].maximumHealth;
             trainingData.trainingDamage = _data.humanDamageLevelData[0].damage;

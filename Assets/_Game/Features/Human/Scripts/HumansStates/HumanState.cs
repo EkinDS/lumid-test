@@ -4,14 +4,14 @@ namespace _Game.Features.HumansState.Scripts.Core
 {
     public abstract class HumanState
     {
-        protected readonly HumanStateController humanStateController;
+        protected readonly GameManager gameManager;
 
         protected abstract void Enter(HumanPresenter humanView);
         public abstract bool HasFreeSlot();
 
-        protected HumanState(HumanStateController humanStateController)
+        protected HumanState(GameManager gameManager)
         {
-            this.humanStateController = humanStateController;
+            this.gameManager = gameManager;
         }
 
         public void OnEnter(HumanPresenter humanView)

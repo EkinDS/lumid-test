@@ -16,7 +16,6 @@ public class HealthBar : MonoBehaviour
         SetVisibility(currentHealth > 0);
     }
 
-
     private void SetVisibility(bool isVisible)
     {
         gameObject.SetActive(isVisible);

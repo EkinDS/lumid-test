@@ -15,8 +15,8 @@ namespace _Game.Features.HumansState.Scripts.Spawn
 
         public override bool HasFreeSlot() => true;
 
-        public SpawnState(HumanStateController humanStateController, HumanPresenter humanPrefab) : base(
-            humanStateController)
+        public SpawnState(GameManager gameManager, HumanPresenter humanPrefab) : base(
+            gameManager)
         {
             _humanPrefab = humanPrefab;
         }
@@ -29,26 +29,24 @@ namespace _Game.Features.HumansState.Scripts.Spawn
         private void SpawnHuman()
         {
             var human = GameObject.Instantiate(_humanPrefab, new Vector3(0F, -4.8F, 0F), Quaternion.identity);
-            human.Initialize(humanStateController);
+            human.Initialize(gameManager);
 
-            humanStateController.RegisterHuman(human);
+            gameManager.RegisterHuman(human);
 
             human.OnHumanDied += OnHumanDied;
 
-            humanStateController.TransitionTo<PortalState>(human);
+            gameManager.TransitionTo<PortalState>(human);
 
-         
+
             Observable.Interval(TimeSpan.FromMilliseconds(1500))
-                .Where(_ => humanStateController.FreeSlotIn<PortalState>())
+                .Where(_ => gameManager.FreeSlotIn<PortalState>())
                 .Subscribe(_ => SpawnHuman());
         }
 
         private void OnHumanDied(HumanPresenter human)
         {
             human.OnHumanDied -= OnHumanDied;
-            humanStateController.UnregisterHuman(human);
+            gameManager.UnregisterHuman(human);
         }
-
-
     }
 }

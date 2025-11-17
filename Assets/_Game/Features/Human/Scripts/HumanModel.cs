@@ -8,39 +8,41 @@ namespace _Game.Features.Humans
     {
         public event Action OnDied;
 
-        public int Health;
-        public int MaximumHealth;
-        public int Damage;
-        public float AttackInterval;
-        public float MovementSpeed;
+        public int health;
+        public int maximumHealth;
+        public int damage;
+        public float attackInterval;
+        public float movementSpeed;
+        
 
-
-        public bool IsDead => Health <= 0;
+        public bool IsDead => health <= 0;
 
         public HumanModel(HumanData humanData)
         {
-            MovementSpeed = humanData.humanMovementSpeedLevelData[0].movementSpeed;
-            MaximumHealth = humanData.humanMaximumHealthLevelData[0].maximumHealth;
-            AttackInterval = humanData.humanAttackIntervalLevelData[0].attackInterval;
-            Damage = humanData.humanDamageLevelData[0].damage;
-            Health = MaximumHealth;
+            movementSpeed = humanData.humanMovementSpeedLevelData[0].movementSpeed;
+            maximumHealth = humanData.humanMaximumHealthLevelData[0].maximumHealth;
+            attackInterval = humanData.humanAttackIntervalLevelData[0].attackInterval;
+            damage = humanData.humanDamageLevelData[0].damage;
+            health = maximumHealth;
         }
 
-        public void Train(HumanStateController.TrainingData  trainingData)
+        public void Train(GameManager.TrainingData  trainingData)
         {
-            MaximumHealth = trainingData.trainingMaximumHealth;
-            Health = MaximumHealth;
-            Damage = trainingData.trainingDamage;
-            AttackInterval = trainingData.trainingAttackingInterval;
-            MovementSpeed = trainingData.trainingMovementSpeed;
+            maximumHealth = trainingData.trainingMaximumHealth;
+            health = maximumHealth;
+            damage = trainingData.trainingDamage;
+            attackInterval = trainingData.trainingAttackingInterval;
+            movementSpeed = trainingData.trainingMovementSpeed;
         }
 
         public void TakeDamage(int amount)
         {
-            if (IsDead) return;
+            if (IsDead)
+            {
+                return;
+            }
 
-            Health -= amount;
-            if (Health < 0) Health = 0;
+            health = (int)MathF.Max(health - amount, 0);
             
             if (IsDead)
             {

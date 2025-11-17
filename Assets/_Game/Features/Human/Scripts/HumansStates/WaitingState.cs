@@ -15,7 +15,7 @@ namespace _Game.Features.HumansState.Scripts.Waiting
 
         public override bool HasFreeSlot() => true;
 
-        public WaitingState(HumanStateController humanStateController) : base(humanStateController)
+        public WaitingState(GameManager gameManager) : base(gameManager)
         {
         }
 
@@ -29,7 +29,7 @@ namespace _Game.Features.HumansState.Scripts.Waiting
         {
             _disposables.Add(humanView.GetInstanceID(), new CompositeDisposable());
             Observable.Timer(TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(2f))
-                .Where(_ => humanStateController.FreeSlotIn<TrainingState>())
+                .Where(_ => gameManager.FreeSlotIn<TrainingState>())
                 .Subscribe(_ => FreeGridSlotAndMoveHumanToCombatPreparation(humanView))
                 .AddTo(_disposables[humanView.GetInstanceID()]);
         }
@@ -38,7 +38,7 @@ namespace _Game.Features.HumansState.Scripts.Waiting
         {
             _disposables[humanView.GetInstanceID()].Dispose();
             _disposables.Remove(humanView.GetInstanceID());
-            humanStateController.TransitionTo<TrainingState>(humanView);
+            gameManager.TransitionTo<TrainingState>(humanView);
         }
     }
 }

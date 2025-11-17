@@ -3,9 +3,7 @@ using System.Collections;
 using _Game.Features.Bosses;
 using _Game.Features.HumansState.Scripts.Core;
 using _Game.Features.PlayerWallet;
-using _Game.Infrastructure;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace _Game.Features.Humans
 {
@@ -16,20 +14,19 @@ namespace _Game.Features.Humans
         private HumanView _view;
         private BossPresenter _boss;
         private Coroutine _attackRoutine;
+        public event Action<HumanPresenter> OnHumanDied;
 
+        
         public bool IsDead => _model.IsDead;
-        EventBus _bus;
 
         private void Awake()
         {
             _view = GetComponent<HumanView>();
         }
 
-        public void Initialize(HumanStateController humanStateController)
+        public void Initialize(GameManager gameManager)
         {
-            _model = new HumanModel(humanStateController.GetHumanData());
-            _bus = humanStateController.EventBus;
-            Wallet.Initialize(_bus);
+            _model = new HumanModel(gameManager.GetHumanData());
             name = "Human " + Time.time;
 
             _model.OnDied += HandleDied;
@@ -37,19 +34,21 @@ namespace _Game.Features.Humans
 
         public void MoveTo(Vector3 targetPosition, System.Action<HumanPresenter> onReached)
         {
-            _view.MoveTo(targetPosition, _model.MovementSpeed, () => onReached?.Invoke(this));
+            _view.MoveTo(targetPosition, _model.movementSpeed, () => onReached?.Invoke(this));
         }
 
-        public void Train(HumanStateController.TrainingData trainingData)
+        public void Train(GameManager.TrainingData trainingData)
         {
             _model.Train(trainingData);
-            _view.ArrangeHealthBar(_model.Health, _model.MaximumHealth);
+            _view.ArrangeHealthBar(_model.health, _model.maximumHealth);
         }
 
         public void StartAttacking(BossPresenter bossView)
         {
             if (_attackRoutine != null)
+            {
                 StopCoroutine(_attackRoutine);
+            }
 
             _boss = bossView;
 
@@ -61,41 +60,38 @@ namespace _Game.Features.Humans
         {
             _model.TakeDamage(damage);
             _view.PlayHitAnimationDown();
-            _view.ArrangeHealthBar(_model.Health, _model.MaximumHealth);
+            _view.ArrangeHealthBar(_model.health, _model.maximumHealth);
         }
 
 
         private IEnumerator AttackLoop()
         {
-            var wait = new WaitForSeconds(_model.AttackInterval);
+            var wait = new WaitForSeconds(_model.attackInterval);
             
             yield return wait;
             while (_boss != null && _boss.IsAlive && !_model.IsDead)
             {
-                RewardPlayer(_model.Damage, transform.position);
-                _boss.TakeDamage(_model.Damage);
+                RewardPlayer(_model.damage, transform.position);
+                _boss.TakeDamage(_model.damage);
                 _view.PlayAttackAnimationUp();
 
                 yield return wait;
             }
         }
 
-
-        public event Action<HumanPresenter> OnHumanDied;
-
-
         private void HandleDied()
         {
             if (_attackRoutine != null)
+            {
                 StopCoroutine(_attackRoutine);
+            }
 
             OnHumanDied?.Invoke(this);
 
             _view.PerformDeathAnimation(() => Destroy(gameObject));
         }
-
-
-        void RewardPlayer(int amount, Vector3 worldPos)
+        
+        private void RewardPlayer(int amount, Vector3 worldPos)
         {
             Wallet.AddCoins(amount, worldPos); 
         }

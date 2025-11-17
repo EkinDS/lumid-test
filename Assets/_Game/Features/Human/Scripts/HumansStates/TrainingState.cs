@@ -3,7 +3,6 @@ using _Game.Features.Humans;
 using _Game.Features.HumansState.Scripts.Combat;
 using _Game.Features.HumansState.Scripts.Core;
 using UniRx;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace _Game.Features.HumansState.Scripts.Training
@@ -16,7 +15,7 @@ namespace _Game.Features.HumansState.Scripts.Training
 
         private bool _isFree = true;
 
-        public TrainingState(HumanStateController humanStateController) : base(humanStateController)
+        public TrainingState(GameManager gameManager) : base(gameManager)
         {
             
         }
@@ -35,9 +34,9 @@ namespace _Game.Features.HumansState.Scripts.Training
 
         private void OnFinished(HumanPresenter humanView)
         {
-            humanView.Train(humanStateController.trainingData);
+            humanView.Train(gameManager.trainingData);
             _isFree = true;
-            humanStateController.TransitionTo<CombatState>(humanView);
+            gameManager.TransitionTo<CombatState>(humanView);
         }
     }
 }

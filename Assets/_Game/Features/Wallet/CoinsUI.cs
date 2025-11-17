@@ -15,20 +15,19 @@ namespace _Game.Features.PlayerWallet
         [SerializeField] RectTransform _coinTarget;
         [SerializeField] RectTransform _coinPrefab;
         [SerializeField] RectTransform _coinParent;
-        [SerializeField] int _coinsPerBurst = 3;
-        [SerializeField] float _duration = 0.6f;
-        [SerializeField] float _spawnDelay = 0.05f;
         [SerializeField] GameEvents _gameEvents;
 
-        EventBus _bus;
+        private float _duration = 0.6f;
+        private int _coinsPerBurst = 3;
+        private float _spawnDelay = 0.05f;
+        private EventBus _bus;
+        private int _displayedCoins;
+        private int _targetCoins;
+        private int _activeBursts;
 
-        int _displayedCoins;
-        int _targetCoins;
-        int _activeBursts;
+        private readonly List<Ease> _eases = new List<Ease>() { Ease.OutCubic, Ease.InCubic, Ease.Linear };
 
-        private List<Ease> _eases = new List<Ease>() { Ease.OutCubic, Ease.InCubic, Ease.Linear };
-
-        void Awake()
+        private void Awake()
         {
             _bus = _gameEvents.Bus;
             if (_coinTarget == null) _coinTarget = transform as RectTransform;
@@ -37,36 +36,36 @@ namespace _Game.Features.PlayerWallet
             _coinsText.text = _displayedCoins.ToString();
         }
 
-        void OnEnable()
+        private void OnEnable()
         {
             _bus.Subscribe<CoinsChangedEvent>(OnCoinsChanged);
         }
 
-        void OnDisable()
+        private void OnDisable()
         {
             _bus.Unsubscribe<CoinsChangedEvent>(OnCoinsChanged);
         }
 
-        void OnCoinsChanged(CoinsChangedEvent e)
+        private void OnCoinsChanged(CoinsChangedEvent e)
         {
-            _targetCoins = e.NewTotal;
+            _targetCoins = e.newTotal;
 
-            if (e.Delta > 0)
+            if (e.delta > 0)
             {
-                int previousTotal = e.NewTotal - e.Delta;
+                int previousTotal = e.newTotal - e.delta;
                 _displayedCoins = previousTotal;
                 _coinsText.text = _displayedCoins.ToString();
 
-                StartCoroutine(SpawnCoins(e.WorldPosition, _coinsPerBurst, e.Delta));
+                StartCoroutine(SpawnCoins(e.worldPosition, _coinsPerBurst, e.delta));
             }
             else
             {
-                _displayedCoins = e.NewTotal;
-                _coinsText.text = e.NewTotal.ToString();
+                _displayedCoins = e.newTotal;
+                _coinsText.text = e.newTotal.ToString();
             }
         }
 
-        IEnumerator SpawnCoins(Vector3 pos, int count, int total)
+        private IEnumerator SpawnCoins(Vector3 pos, int count, int total)
         {
             var cam = Camera.main;
             var canvasRT = _canvas.transform as RectTransform;
@@ -91,13 +90,14 @@ namespace _Game.Features.PlayerWallet
                 control.y += Random.Range(60f, 120f);
                 control.x += Random.Range(-40f, 40f);
 
-                
+
                 coin.transform.DOLocalMoveX(target.x, _duration).SetEase(_eases[Random.Range(0, _eases.Count)]);
-                coin.transform.DOLocalMoveY(target.y, _duration).SetEase(_eases[Random.Range(0, _eases.Count)]).OnComplete((() =>
-                {
-                    Destroy(coin.gameObject);
-                    Arrive(gain);
-                }));
+                coin.transform.DOLocalMoveY(target.y, _duration).SetEase(_eases[Random.Range(0, _eases.Count)])
+                    .OnComplete((() =>
+                    {
+                        Destroy(coin.gameObject);
+                        Arrive(gain);
+                    }));
 
                 yield return new WaitForSeconds(_spawnDelay);
             }
@@ -112,13 +112,7 @@ namespace _Game.Features.PlayerWallet
             }
         }
 
-        Vector2 Bezier(Vector2 a, Vector2 b, Vector2 c, float t)
-        {
-            float u = 1f - t;
-            return u * u * a + 2f * u * t * b + t * t * c;
-        }
-
-        void Arrive(int gain)
+        private void Arrive(int gain)
         {
             _displayedCoins += gain;
             if (_displayedCoins > _targetCoins)

@@ -485,7 +485,7 @@ GameObject:
   - component: {fileID: 1137818697}
   - component: {fileID: 1137818698}
   m_Layer: 0
-  m_Name: HumanStateController
+  m_Name: GameManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -522,6 +522,7 @@ MonoBehaviour:
   _bossPrefab: {fileID: 1809021882476179898, guid: 9e687aaddbde14d6098d6b545f5c8ca5, type: 3}
   _data: {fileID: 11400000, guid: b920e6f2fa9df9340b4766d9ea86877f, type: 2}
   _eventBus: {fileID: 1241590681}
+  trainingSlot: {fileID: 7624081899703874571}
 --- !u!1 &1186642282
 GameObject:
   m_ObjectHideFlags: 0
@@ -647,7 +648,7 @@ GameObject:
   - component: {fileID: 1461623468}
   - component: {fileID: 1461623470}
   m_Layer: 5
-  m_Name: CoinCanvas
+  m_Name: CoinsUi
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -737,9 +738,6 @@ MonoBehaviour:
   _coinTarget: {fileID: 1880299188}
   _coinPrefab: {fileID: 8419856020410854431, guid: 436a04b9a8e9e764f864d342e563db2d, type: 3}
   _coinParent: {fileID: 1667076979}
-  _coinsPerBurst: 3
-  _duration: 0.6
-  _spawnDelay: 0.05
   _gameEvents: {fileID: 1241590681}
 --- !u!1001 &1512945893
 PrefabInstance:
@@ -1429,7 +1427,7 @@ GameObject:
   - component: {fileID: 4148644688204834054}
   - component: {fileID: 7606036885197416766}
   m_Layer: 0
-  m_Name: Main Camera
+  m_Name: MainCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1841,7 +1839,6 @@ GameObject:
   - component: {fileID: 5565824904654625084}
   - component: {fileID: 3902500080246936430}
   - component: {fileID: 2440783669975423181}
-  - component: {fileID: 6181766747249448733}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -2025,7 +2022,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6181766747249448733}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: TrainingSlotUI, Assembly-CSharp
         m_MethodName: ArrowButtonClicked
         m_Mode: 1
@@ -2096,26 +2093,6 @@ RectTransform:
   m_AnchoredPosition: {x: -1.1316, y: 4}
   m_SizeDelta: {x: 3.5683, y: 6.4378}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &6181766747249448733
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3774069483355208201}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d06f1e47e21de0a42a2815ac36dafaf8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  upgradeButtonsContainer: {fileID: 4251044270823146147}
-  _controller: {fileID: 1137818698}
-  _buttons:
-  - {fileID: 8274353586496507954}
-  - {fileID: 1055924076}
-  - {fileID: 2089579121}
-  - {fileID: 1921741536}
-  _gameEvents: {fileID: 1241590681}
 --- !u!4 &6363579170441214804
 Transform:
   m_ObjectHideFlags: 0
@@ -2245,6 +2222,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7624081899703874570}
+  - component: {fileID: 7624081899703874571}
   m_Layer: 0
   m_Name: TrainSlot
   m_TagString: Untagged
@@ -2277,6 +2255,26 @@ Transform:
   - {fileID: 6083536418207372728}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7624081899703874571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7461129562497476173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d06f1e47e21de0a42a2815ac36dafaf8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  upgradeButtonsContainer: {fileID: 4251044270823146147}
+  _controller: {fileID: 1137818698}
+  _buttons:
+  - {fileID: 8274353586496507954}
+  - {fileID: 1055924076}
+  - {fileID: 2089579121}
+  - {fileID: 1921741536}
+  _gameEvents: {fileID: 1241590681}
 --- !u!224 &8133468818875236694 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4185443967199307809, guid: d796c8a5104b367489c34b1beafd1bd8, type: 3}
@@ -2297,11 +2295,11 @@ MonoBehaviour:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 1137818697}
   - {fileID: 1241590682}
   - {fileID: 310464235307190785}
   - {fileID: 1186642285}
   - {fileID: 1461623467}
-  - {fileID: 1137818697}
   - {fileID: 6363579170441214804}
   - {fileID: 5573449766653546715}
   - {fileID: 7624081899703874570}

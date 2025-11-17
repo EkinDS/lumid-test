@@ -6,20 +6,21 @@ using _Game.Infrastructure;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TrainingSlotUI : MonoBehaviour
+public class TrainingSlot : MonoBehaviour
 {
     [SerializeField] private GameObject upgradeButtonsContainer;
-    [SerializeField] private HumanStateController _controller;
+    [SerializeField] private GameManager _controller;
     [SerializeField] private List<UpgradeButton> _buttons;
-    [SerializeField] private GameEvents _gameEvents; 
+    [SerializeField] private GameEvents _gameEvents;
 
     private bool upgradesAreShown;
     private readonly Dictionary<HumanStatType, int> _levels = new();
     private EventBus _bus;
 
-   
-    void Awake()
+
+    public void Initialize()
     {
+        print("awake"+ "," + (_bus == null));
         _bus = _controller.EventBus;
 
         foreach (var btn in _buttons)
@@ -29,15 +30,19 @@ public class TrainingSlotUI : MonoBehaviour
             button.onClick.AddListener(() => OnUpgrade(btn.type));
             _levels[btn.type] = 0;
         }
-    }
-
-    void OnEnable()
-    {
+        
         _bus.Subscribe<CoinsChangedEvent>(HandleCoinsChanged);
+
     }
 
-    void OnDisable()
+    private void OnEnable()
     {
+        //print("enable" + "," + (_bus == null));
+    }
+
+    private void OnDisable()
+    {
+        print("disable");
         _bus.Unsubscribe<CoinsChangedEvent>(HandleCoinsChanged);
     }
 
@@ -134,17 +139,17 @@ public class TrainingSlotUI : MonoBehaviour
 
         int cost = type switch
         {
-            HumanStatType.Health         => NextCost(data.humanMaximumHealthLevelData, level),
-            HumanStatType.MoveSpeed      => NextCost(data.humanMovementSpeedLevelData, level),
+            HumanStatType.Health => NextCost(data.humanMaximumHealthLevelData, level),
+            HumanStatType.MoveSpeed => NextCost(data.humanMovementSpeedLevelData, level),
             HumanStatType.AttackInterval => NextCost(data.humanAttackIntervalLevelData, level),
-            HumanStatType.Damage         => NextCost(data.humanDamageLevelData, level),
+            HumanStatType.Damage => NextCost(data.humanDamageLevelData, level),
             _ => -1
         };
 
         if (cost < 0 || Wallet.GetCoins() < cost)
             return;
 
-        Wallet.AddCoins(-cost);   // Wallet will internally publish CoinsChangedEvent via the bus
+        Wallet.AddCoins(-cost);
         _levels[type]++;
 
         ApplyStat(type);
