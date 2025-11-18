@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
 using _Game.Features.Humans;
-using DG.Tweening;
+using _Game.Infrastructure;
 using UnityEngine;
 
 namespace _Game.Features.Bosses
@@ -9,58 +8,70 @@ namespace _Game.Features.Bosses
     [RequireComponent(typeof(BossView))]
     public class BossPresenter : MonoBehaviour
     {
-        [SerializeField] private int _startingHp;
-        [SerializeField] private int _damage;
-        [SerializeField] private float _attackInterval;
-        [SerializeField] private int _targetsPerAttack;
+        [Header("Config")] 
+        [SerializeField] private int _startingHp = 100;
+        [SerializeField] private int _damage = 5;
+        [SerializeField] private float _attackInterval = 1f;
+        [SerializeField] private int _targetsPerAttack = 1;
 
         private BossModel _model;
         private BossView _view;
+        private EventBus _bus;
         private float _lastAttackTime;
-        private Action<List<HumanPresenter>> bossDefeatedCallback;
 
         private readonly List<HumanPresenter> _attackers = new();
 
         public bool IsAlive => _model != null && _model.IsAlive;
 
-        private void Awake()
+        void Awake()
         {
             _view = GetComponent<BossView>();
-
-            _model = new BossModel(_startingHp, _damage);
-            SubscribeModelEvents();
-            _view.SetHealthBar(_model.CurrentHp, _model.MaxHp);
         }
 
-        private void Update()
+        void OnDisable()
         {
-            if (!IsAlive)
-                return;
-
-            if (_attackers.Count == 0)
-                return;
-
-            if (Time.time - _lastAttackTime < _attackInterval)
-                return;
-
-            AttackHumans();
-            _lastAttackTime = Time.time;
+            if (_bus == null) return;
+            _bus.Unsubscribe<BossHealthChangedEvent>(OnBossHealthChanged);
+            _bus.Unsubscribe<BossDiedEvent>(OnBossDied);
         }
 
-        public void Initialize(int hp, float attackInterval, int targetsPerAttack, double damage)
+        void Start()
+        {
+            if (_model == null && _bus != null)
+                _model = new BossModel(_startingHp, _damage, _bus);
+
+            if (_model != null)
+                _view.SetHealthBar(_model.CurrentHp, _model.MaxHp);
+        }
+
+        public void Initialize(int hp, float attackInterval, int targetsPerAttack, double damage, EventBus eventBus)
         {
             _attackInterval = attackInterval;
             _targetsPerAttack = targetsPerAttack;
             _damage = (int)damage;
 
-            _model = new BossModel(hp, _damage);
-            SubscribeModelEvents();
+            _bus = eventBus;
 
+            _model = new BossModel(hp, _damage, _bus);
             _view.SetHealthBar(_model.CurrentHp, _model.MaxHp);
+
+            _bus.Subscribe<BossHealthChangedEvent>(OnBossHealthChanged);
+            _bus.Subscribe<BossDiedEvent>(OnBossDied);
+        }
+
+        void Update()
+        {
+            if (!IsAlive) return;
+            if (_attackers.Count == 0) return;
+            if (Time.time - _lastAttackTime < _attackInterval) return;
+
+            AttackHumans();
+            _lastAttackTime = Time.time;
         }
 
         public void TakeDamage(int damage)
         {
+            if (!IsAlive) return;
             _model.TakeDamage(damage);
             _view.PlayHitAnimation();
         }
@@ -68,71 +79,45 @@ namespace _Game.Features.Bosses
         public void RegisterAttacker(HumanPresenter humanPresenter)
         {
             if (!_attackers.Contains(humanPresenter))
-            {
                 _attackers.Add(humanPresenter);
-            }
         }
 
-        public void SetDeathCallback(Action<List<HumanPresenter>> callback)
+        public void UnregisterAttacker(HumanPresenter humanPresenter)
         {
-            bossDefeatedCallback = callback;
+            _attackers.Remove(humanPresenter);
         }
 
-        private void HandleHealthChanged(int current, int max)
+        void OnBossHealthChanged(BossHealthChangedEvent e)
         {
-            _view.SetHealthBar(current, max);
+            _view.SetHealthBar(e.CurrentHp, e.MaxHp);
         }
 
-        private void HandleDied()
+        void OnBossDied(BossDiedEvent e)
         {
-            bossDefeatedCallback?.Invoke(new List<HumanPresenter>(_attackers));
-           
-            _view.PerformDeathAnimation((() => Destroy(gameObject)));
+            _bus.Publish(new BossDefeatedEvent(new List<HumanPresenter>(_attackers)));
+
+            _attackers.Clear();
+
+            _view.PerformDeathAnimation(() => Destroy(gameObject));
         }
 
-        private void OnDestroy()
-        {
-            UnsubscribeModelEvents();
-        }
-
-
-        private void SubscribeModelEvents()
-        {
-            _model.OnHealthChanged += HandleHealthChanged;
-            _model.OnDied += HandleDied;
-        }
-
-        private void UnsubscribeModelEvents()
-        {
-            if (_model == null) return;
-
-            _model.OnHealthChanged -= HandleHealthChanged;
-            _model.OnDied -= HandleDied;
-        }
-
-
-        private void AttackHumans()
+        void AttackHumans()
         {
             var defeatedHumans = new List<HumanPresenter>();
+            int count = Mathf.Min(_targetsPerAttack, _attackers.Count);
 
-            var count = Mathf.Min(_targetsPerAttack, _attackers.Count);
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
                 var target = _attackers[i];
                 target.TakeDamage(_model.Damage);
-
                 _view.PlayAttackAnimation();
 
                 if (target.IsDead)
-                {
                     defeatedHumans.Add(target);
-                }
             }
 
-            foreach (var defeatedHuman in defeatedHumans)
-            {
-                _attackers.Remove(defeatedHuman);
-            }
+            foreach (var h in defeatedHumans)
+                _attackers.Remove(h);
         }
     }
 }

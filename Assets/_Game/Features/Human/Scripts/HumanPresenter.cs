@@ -1,8 +1,8 @@
-using System;
 using System.Collections;
 using _Game.Features.Bosses;
 using _Game.Features.HumansState.Scripts.Core;
 using _Game.Features.PlayerWallet;
+using _Game.Infrastructure;
 using UnityEngine;
 
 namespace _Game.Features.Humans
@@ -14,18 +14,18 @@ namespace _Game.Features.Humans
         private HumanView _view;
         private BossPresenter _boss;
         private Coroutine _attackRoutine;
-        public event Action<HumanPresenter> OnHumanDied;
+        private EventBus _bus;
 
-        
         public bool IsDead => _model.IsDead;
 
-        private void Awake()
+        void Awake()
         {
             _view = GetComponent<HumanView>();
         }
 
         public void Initialize(GameManager gameManager)
         {
+            _bus = gameManager.EventBus;
             _model = new HumanModel(gameManager.GetHumanData());
             name = "Human " + Time.time;
 
@@ -46,9 +46,7 @@ namespace _Game.Features.Humans
         public void StartAttacking(BossPresenter bossView)
         {
             if (_attackRoutine != null)
-            {
                 StopCoroutine(_attackRoutine);
-            }
 
             _boss = bossView;
 
@@ -63,12 +61,12 @@ namespace _Game.Features.Humans
             _view.ArrangeHealthBar(_model.health, _model.maximumHealth);
         }
 
-
-        private IEnumerator AttackLoop()
+        IEnumerator AttackLoop()
         {
             var wait = new WaitForSeconds(_model.attackInterval);
-            
+
             yield return wait;
+
             while (_boss != null && _boss.IsAlive && !_model.IsDead)
             {
                 RewardPlayer(_model.damage, transform.position);
@@ -79,21 +77,25 @@ namespace _Game.Features.Humans
             }
         }
 
-        private void HandleDied()
+        void HandleDied()
         {
             if (_attackRoutine != null)
-            {
                 StopCoroutine(_attackRoutine);
-            }
 
-            OnHumanDied?.Invoke(this);
+            _bus?.Publish(new HumanDiedEvent(this));
 
             _view.PerformDeathAnimation(() => Destroy(gameObject));
         }
-        
-        private void RewardPlayer(int amount, Vector3 worldPos)
+
+        void OnDestroy()
         {
-            Wallet.AddCoins(amount, worldPos); 
+            if (_model != null)
+                _model.OnDied -= HandleDied;
+        }
+
+        void RewardPlayer(int amount, Vector3 worldPos)
+        {
+            Wallet.AddCoins(amount, worldPos);
         }
     }
 }

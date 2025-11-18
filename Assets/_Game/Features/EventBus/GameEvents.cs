@@ -8,7 +8,7 @@ namespace _Game
         public EventBus Bus { get; private set; }
 
         public void Initialize()
-        {            print("init bus");
+        {         
 
             Bus = new EventBus();
         }

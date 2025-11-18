@@ -2,6 +2,7 @@ using System;
 using _Game.Features.Humans;
 using _Game.Features.HumansState.Scripts.Core;
 using _Game.Features.HumansState.Scripts.Portal;
+using _Game.Infrastructure;
 using UniRx;
 using UnityEngine;
 
@@ -9,16 +10,24 @@ namespace _Game.Features.HumansState.Scripts.Spawn
 {
     public class SpawnState : HumanState
     {
-        private readonly HumanPresenter _humanPrefab;
+        readonly HumanPresenter _humanPrefab;
+        readonly EventBus _bus;
 
-        private int _spawnedHumansCount;
+        int _spawnedHumansCount;
+        IDisposable _spawnSubscription;
 
         public override bool HasFreeSlot() => true;
 
-        public SpawnState(GameManager gameManager, HumanPresenter humanPrefab) : base(
-            gameManager)
+        public SpawnState(GameManager gameManager, HumanPresenter humanPrefab) : base(gameManager)
         {
             _humanPrefab = humanPrefab;
+            _bus = gameManager.EventBus;
+
+            _bus.Subscribe<HumanDiedEvent>(OnHumanDied);
+
+            _spawnSubscription = Observable.Interval(TimeSpan.FromMilliseconds(1500))
+                .Where(_ => gameManager.FreeSlotIn<PortalState>())
+                .Subscribe(_ => SpawnHuman());
         }
 
         protected override void Enter(HumanPresenter humanView)
@@ -26,27 +35,18 @@ namespace _Game.Features.HumansState.Scripts.Spawn
             SpawnHuman();
         }
 
-        private void SpawnHuman()
+        void SpawnHuman()
         {
-            var human = GameObject.Instantiate(_humanPrefab, new Vector3(0F, -4.8F, 0F), Quaternion.identity);
+            var human = GameObject.Instantiate(_humanPrefab, new Vector3(0f, -4.8f, 0f), Quaternion.identity);
             human.Initialize(gameManager);
 
             gameManager.RegisterHuman(human);
-
-            human.OnHumanDied += OnHumanDied;
-
             gameManager.TransitionTo<PortalState>(human);
-
-
-            Observable.Interval(TimeSpan.FromMilliseconds(1500))
-                .Where(_ => gameManager.FreeSlotIn<PortalState>())
-                .Subscribe(_ => SpawnHuman());
         }
 
-        private void OnHumanDied(HumanPresenter human)
+        void OnHumanDied(HumanDiedEvent e)
         {
-            human.OnHumanDied -= OnHumanDied;
-            gameManager.UnregisterHuman(human);
+            gameManager.UnregisterHuman(e.Human);
         }
     }
 }

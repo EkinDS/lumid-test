@@ -32,7 +32,6 @@ namespace _Game.Features.HumansState.Scripts.Core
 
         private void Awake()
         {
-            print("awake gamemanager");
             _eventBus.Initialize();
             Wallet.Initialize(EventBus);
             trainingSlot.Initialize();

@@ -20,7 +20,6 @@ public class TrainingSlot : MonoBehaviour
 
     public void Initialize()
     {
-        print("awake"+ "," + (_bus == null));
         _bus = _controller.EventBus;
 
         foreach (var btn in _buttons)
@@ -37,12 +36,11 @@ public class TrainingSlot : MonoBehaviour
 
     private void OnEnable()
     {
-        //print("enable" + "," + (_bus == null));
+        
     }
 
     private void OnDisable()
     {
-        print("disable");
         _bus.Unsubscribe<CoinsChangedEvent>(HandleCoinsChanged);
     }
 

@@ -1,27 +1,25 @@
 using System;
+using _Game.Infrastructure;
 
 namespace _Game.Features.Bosses
 {
     public class BossModel
     {
-        public event Action<int, int> OnHealthChanged;
-        public event Action OnDied;
-
         public int CurrentHp { get; private set; }
-
         public int MaxHp { get; private set; }
-
         public int Damage { get; private set; }
-
         public bool IsAlive => CurrentHp > 0;
 
-        public BossModel(int hp, int damage)
+        readonly EventBus _bus;
+
+        public BossModel(int hp, int damage, EventBus bus)
         {
+            _bus = bus;
             CurrentHp = hp;
             MaxHp = hp;
             Damage = damage;
 
-            OnHealthChanged?.Invoke(CurrentHp, MaxHp);
+            _bus?.Publish(new BossHealthChangedEvent(CurrentHp, MaxHp));
         }
 
         public void TakeDamage(int amount)
@@ -29,12 +27,10 @@ namespace _Game.Features.Bosses
             if (!IsAlive) return;
 
             CurrentHp = Math.Max(0, CurrentHp - amount);
-            OnHealthChanged?.Invoke(CurrentHp, MaxHp);
+            _bus?.Publish(new BossHealthChangedEvent(CurrentHp, MaxHp));
 
             if (CurrentHp <= 0)
-            {
-                OnDied?.Invoke();
-            }
+                _bus?.Publish(new BossDiedEvent());
         }
     }
 }

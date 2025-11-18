@@ -1,5 +1,6 @@
 using System;
 using _Game.Features.HumansState.Scripts.Core;
+using UnityEngine;
 
 namespace _Game.Features.Humans
 {
@@ -13,41 +14,35 @@ namespace _Game.Features.Humans
         public int damage;
         public float attackInterval;
         public float movementSpeed;
-        
 
         public bool IsDead => health <= 0;
 
         public HumanModel(HumanData humanData)
         {
-            movementSpeed = humanData.humanMovementSpeedLevelData[0].movementSpeed;
-            maximumHealth = humanData.humanMaximumHealthLevelData[0].maximumHealth;
-            attackInterval = humanData.humanAttackIntervalLevelData[0].attackInterval;
-            damage = humanData.humanDamageLevelData[0].damage;
-            health = maximumHealth;
+            movementSpeed   = humanData.humanMovementSpeedLevelData[0].movementSpeed;
+            maximumHealth   = humanData.humanMaximumHealthLevelData[0].maximumHealth;
+            attackInterval  = humanData.humanAttackIntervalLevelData[0].attackInterval;
+            damage          = humanData.humanDamageLevelData[0].damage;
+            health          = maximumHealth;
         }
 
-        public void Train(GameManager.TrainingData  trainingData)
+        public void Train(GameManager.TrainingData trainingData)
         {
-            maximumHealth = trainingData.trainingMaximumHealth;
-            health = maximumHealth;
-            damage = trainingData.trainingDamage;
+            maximumHealth  = trainingData.trainingMaximumHealth;
+            health         = maximumHealth;
+            damage         = trainingData.trainingDamage;
             attackInterval = trainingData.trainingAttackingInterval;
-            movementSpeed = trainingData.trainingMovementSpeed;
+            movementSpeed  = trainingData.trainingMovementSpeed;
         }
 
         public void TakeDamage(int amount)
         {
-            if (IsDead)
-            {
-                return;
-            }
+            if (IsDead) return;
 
-            health = (int)MathF.Max(health - amount, 0);
-            
+            health = Mathf.Max(health - amount, 0);
+
             if (IsDead)
-            {
                 OnDied?.Invoke();
-            }
         }
     }
 }
