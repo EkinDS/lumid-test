@@ -20,7 +20,7 @@ public class UpgradeButton : MonoBehaviour
 
     public void UpdateDisplay(string currentValue, int level, string nextValue, string price, bool isMaxLevel)
     {
-        levelTex.text = $"Level {level}";
+        levelTex.text = $"Level {level + 1}";
 
         if (isMaxLevel)
         {

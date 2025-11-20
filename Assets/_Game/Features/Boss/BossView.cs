@@ -13,6 +13,7 @@ namespace _Game.Features.Bosses
         private Vector2 _originalPosition;
         private Sequence _takeDamageColorSequence;
         private Sequence _attackMovementSequence;
+        private float _lastHitAnimationTime;
 
         private void Awake()
         {
@@ -35,6 +36,15 @@ namespace _Game.Features.Bosses
 
         public void PlayHitAnimation()
         {
+            float currentTime = Time.time;
+            
+            if (_lastHitAnimationTime > currentTime - 1F)
+            {
+                return;
+            }
+
+            _lastHitAnimationTime = currentTime;
+            
             _mainSpriteRenderer.color = Color.white;
             _takeDamageColorSequence.Kill();
             _takeDamageColorSequence = DOTween.Sequence();
